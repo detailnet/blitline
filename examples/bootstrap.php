@@ -11,7 +11,7 @@ if (file_exists($basePath . 'vendor/autoload.php')) {
     );
 }
 
-$loader->add('Detail\Blitline', $basePath . 'src/Detail/Blitline');
+$loader->add('Detail\Blitline', $basePath . 'src');
 
 if (!file_exists('config.php')) {
     throw new RuntimeException(
