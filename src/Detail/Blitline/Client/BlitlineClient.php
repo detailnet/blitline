@@ -6,6 +6,7 @@ use Guzzle\Common\Collection;
 use Guzzle\Service\Client;
 use Guzzle\Service\Description\ServiceDescription;
 
+use Detail\Blitline\Client\Listener\ExpectedContentTypeListener;
 use Detail\Blitline\Exception\InvalidArgumentException;
 
 /**
@@ -16,6 +17,8 @@ use Detail\Blitline\Exception\InvalidArgumentException;
  */
 class BlitlineClient extends Client
 {
+    const CLIENT_VERSION = '0.1.0';
+
     public static function factory($options = array())
     {
         $defaultOptions = array('base_url' => 'https://api.blitline.com/');
@@ -45,12 +48,15 @@ class BlitlineClient extends Client
             'headers',
             array(
                 'Accept' => 'application/json',
+//                'Expect' => 'application/json',
             )
         );
         $client->setDescription(
             ServiceDescription::factory(__DIR__ . '/../ServiceDescription/Blitline.php')
         );
-        $client->setUserAgent('detailnet-blitline-client', true);
+        $client->setUserAgent('detailnet-blitline/' . self::CLIENT_VERSION, true);
+
+        $client->getEventDispatcher()->addSubscriber(new ExpectedContentTypeListener());
 
         return $client;
     }

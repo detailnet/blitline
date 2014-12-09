@@ -39,7 +39,7 @@ $job = array(
                 'image_identifier' => $imageName,
                 's3_destination' => array(
                     'bucket' => $getConfig('s3bucket'),
-                    'key' => $getConfig('s3path') . '/' . $imageName . '-blitline.jpg',
+                    'key' => $getConfig('s3path') . '/' . $imageName . '-' . $imageSize . '_blitline.jpg',
                 ),
             ),
         ),
