@@ -28,7 +28,7 @@ class BlitlineClient extends Client
         );
 
         foreach ($requiredOptions as $optionName) {
-            if (!isset($options[$optionName])) {
+            if (!isset($options[$optionName]) || $options[$optionName] === '') {
                 throw new InvalidArgumentException(
                     sprintf('Missing required configuration option "%s"', $optionName)
                 );

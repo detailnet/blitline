@@ -55,4 +55,4 @@ class ExpectedContentTypeListenerTest extends TestCase
 
         $this->assertEquals('application/json', $command->get('command.expects'));
     }
-} 
+}

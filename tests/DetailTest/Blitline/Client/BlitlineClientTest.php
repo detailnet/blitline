@@ -1,58 +1,99 @@
 <?php
 
-namespace DetailTest\Blitline\Client\Listener;
+namespace DetailTest\Blitline\Client;
 
 use PHPUnit_Framework_TestCase as TestCase;
 
-use Guzzle\Common\Event;
-
+use Detail\Blitline\Client\BlitlineClient;
 use Detail\Blitline\Client\Listener\ExpectedContentTypeListener;
 
-class ExpectedContentTypeListenerTest extends TestCase
+class BlitlineClientTest extends TestCase
 {
-    /** @var ExpectedContentTypeListener */
-    protected $listener;
+//    /** @var BlitlineClient */
+//    protected $client;
 
-    protected function setUp()
+    public function provideConfigValues()
     {
-        $this->listener = new ExpectedContentTypeListener();
+        return array(
+            array('random_application_id'),
+        );
     }
 
-    public function testIsSubscribedToAfterSendEvent()
-    {
-        $events = $this->listener->getSubscribedEvents();
+//    protected function setUp()
+//    {
+//        $this->client = new BlitlineClient();
+//    }
 
-        $this->assertArrayHasKey('command.after_send', $events);
+    /**
+     * @param $applicationId
+     * @dataProvider provideConfigValues
+     */
+    public function testFactoryReturnsClient($applicationId)
+    {
+        $config = array(
+            'application_id' => $applicationId
+        );
+
+        $client = BlitlineClient::factory($config);
+
+        $this->assertInstanceOf('Detail\Blitline\Client\BlitlineClient', $client);
+        $this->assertEquals($config['application_id'], $client->getDefaultOption('query')['application_id']);
+        $this->assertEquals('application/json', $client->getDefaultOption('headers')['Accept']);
+        $this->assertEquals('https://api.blitline.com/', $client->getConfig('base_url'));
+
+        $hasExpectedContentTypeListener = false;
+
+        foreach ($client->getEventDispatcher()->getListeners() as $eventName => $listeners) {
+            foreach ($listeners as $listenerConfig) {
+                list($listener, $callback) = $listenerConfig;
+
+                if ($listener instanceof ExpectedContentTypeListener) {
+                    $hasExpectedContentTypeListener = true;
+                }
+            }
+        }
+
+        $this->assertTrue(
+            $hasExpectedContentTypeListener,
+            'BlitlineClient is missing the listener of type "Detail\Blitline\Client\Listener\ExpectedContentTypeListener"'
+        );
     }
 
-    public function testCommandExpectsJsonWhenClientAcceptsJson()
+    /**
+     * @expectedException \Detail\Blitline\Exception\InvalidArgumentException
+     */
+    public function testFactoryThrowsExceptionOnMissingConfigurationOptions()
     {
-        $header = $this->getMock('Guzzle\Http\Message\Header\HeaderInterface');
-        $header
-            ->expects($this->once())
-            ->method('hasValue')
-            ->will($this->returnValue(true));
+        $config = array();
 
-        $request = $this->getMock('Guzzle\Http\Message\RequestInterface');
-        $request
-            ->expects($this->once())
-            ->method('getHeader')
-            ->will($this->returnValue($header));
-
-        $command = $this->getMock('Guzzle\Service\Command\OperationCommand', array('getRequest'));
-        $command
-            ->expects($this->once())
-            ->method('getRequest')
-            ->will($this->returnValue($request));
-
-        /** @var \Guzzle\Service\Command\OperationCommand $command */
-        $event = new Event();
-        $event['command'] = $command;
-
-        $this->assertNull($command->get('command.expects'));
-
-        $this->listener->addExpectedContentType($event);
-
-        $this->assertEquals('application/json', $command->get('command.expects'));
+        BlitlineClient::factory($config);
     }
-} 
+
+    /**
+     * @expectedException \Detail\Blitline\Exception\InvalidArgumentException
+     */
+    public function testFactoryThrowsExceptionOnBlankConfigurationOptions()
+    {
+        $config = array(
+            'application_id' => '',
+        );
+
+        BlitlineClient::factory($config);
+    }
+
+    /**
+     * @param $applicationId
+     * @dataProvider provideConfigValues
+     */
+    public function testClientHasCommands($applicationId)
+    {
+        $config = array(
+            'application_id' => $applicationId
+        );
+
+        $client = BlitlineClient::factory($config);
+
+        $this->assertInstanceOf('Guzzle\Service\Command\OperationCommand', $client->getCommand('pollJob'));
+        $this->assertInstanceOf('Guzzle\Service\Command\OperationCommand', $client->getCommand('postJob'));
+    }
+}
