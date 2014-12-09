@@ -20,23 +20,26 @@ return array(
         ),
         'postJob' => array(
             'httpMethod'       => 'POST',
-            'uri'              => 'jobs',
+            'uri'              => 'job',
             'summary'          => 'Submitting a job',
             'documentationUrl' => 'http://www.blitline.com/docs/api',
             'parameters'       => array(
-//                'application_id' => array(),
                 'src' => array(
                     'description' => 'The location of the image you wish to process',
                     'location'    => 'json',
                     'type'        => 'string',
                     'required'    => true,
                 ),
-                'functions' => array(
-                    'description' => 'One or more operations you want performed on the source image',
-                    'location'    => 'json',
-                    'type'        => 'array',
-                    'required'    => true,
-                ),
+                /** @todo Define functions properly and remove "additionalParamters" as catch-all... */
+//                'functions' => array(
+//                    'description' => 'One or more operations you want performed on the source image',
+//                    'location'    => 'json',
+//                    'type'        => 'array',
+//                    'required'    => true,
+//                ),
+            ),
+            'additionalParameters' => array(
+                'location' => 'json',
             ),
         ),
     ),

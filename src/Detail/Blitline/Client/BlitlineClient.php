@@ -8,6 +8,12 @@ use Guzzle\Service\Description\ServiceDescription;
 
 use Detail\Blitline\Exception\InvalidArgumentException;
 
+/**
+ * Blitline API client.
+ *
+ * @method array pollJob(array $args = array())
+ * @method array postJob(array $args = array())
+ */
 class BlitlineClient extends Client
 {
     public static function factory($options = array())
@@ -35,8 +41,13 @@ class BlitlineClient extends Client
                 'application_id' => $config['application_id'],
             )
         );
+        $client->setDefaultOption(
+            'headers',
+            array(
+                'Accept' => 'application/json',
+            )
+        );
         $client->setDescription(
-//            ServiceDescription::factory(__DIR__ . '/../../../../resources/config/client.json')
             ServiceDescription::factory(__DIR__ . '/../ServiceDescription/Blitline.php')
         );
         $client->setUserAgent('detailnet-blitline-client', true);
