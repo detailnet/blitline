@@ -48,7 +48,6 @@ class BlitlineClient extends Client
             'headers',
             array(
                 'Accept' => 'application/json',
-//                'Expect' => 'application/json',
             )
         );
         $client->setDescription(

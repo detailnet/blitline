@@ -28,4 +28,4 @@ class ExpectedContentTypeListener implements EventSubscriberInterface
             $command['command.expects'] = 'application/json';
         }
     }
-} 
+}
