@@ -8,10 +8,20 @@ use Detail\Blitline\Exception\RuntimeException;
 class JobBuilder
     implements JobBuilderInterface
 {
+
+    /**
+     * @var string
+     */
     protected $jobClass;
 
+    /**
+     * @var string
+     */
     protected $functionClass;
 
+    /**
+     * @var array
+     */
     protected $defaultOptions = array();
 
     /**
@@ -44,10 +54,14 @@ class JobBuilder
         return $this->createClass($this->functionClass);
     }
 
+    /**
+     * @param string $class
+     * @return mixed
+     */
     protected function createClass($class)
     {
         if (!class_exists($class)) {
-            throw new RuntimeException(sprintf('Job class "%s" does not exist', $class));
+            throw new RuntimeException(sprintf('Class "%s" does not exist', $class));
         }
 
         return new $class();
