@@ -2,6 +2,8 @@
 
 namespace Detail\Blitline\Client;
 
+use Detail\Blitline\Job\JobBuilder;
+use Detail\Blitline\Job\JobBuilderInterface;
 use Guzzle\Common\Collection;
 use Guzzle\Service\Client;
 use Guzzle\Service\Description\ServiceDescription;
@@ -17,7 +19,10 @@ use Detail\Blitline\Exception\InvalidArgumentException;
  */
 class BlitlineClient extends Client
 {
-    const CLIENT_VERSION = '0.1.0';
+    const CLIENT_VERSION = '0.2.0';
+
+    /** @var  JobBuilderInterface */
+    protected $jobBuilder;
 
     public static function factory($options = array())
     {
@@ -58,5 +63,34 @@ class BlitlineClient extends Client
         $client->getEventDispatcher()->addSubscriber(new ExpectedContentTypeListener());
 
         return $client;
+    }
+
+    /**
+     * @return JobBuilderInterface
+     */
+    public function getJobBuilder()
+    {
+        if ($this->jobBuilder === null) {
+            $this->jobBuilder = new JobBuilder();
+        }
+
+        return $this->jobBuilder;
+    }
+
+    /**
+     * @param JobBuilderInterface $jobBuilder
+     */
+    public function setJobBuilder(JobBuilderInterface $jobBuilder)
+    {
+        $this->jobBuilder = $jobBuilder;
+    }
+
+    public function __construct($baseUrl = '', $config = null, JobBuilderInterface $jobBuilder = null)
+    {
+        parent::__construct($baseUrl, $config);
+
+        if ($jobBuilder !== null) {
+            $this->setJobBuilder($jobBuilder);
+        }
     }
 }

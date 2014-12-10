@@ -24,6 +24,49 @@ $getConfig = function($optionName) use ($config) {
 
 $blitline = BlitlineClient::factory($config);
 
+/** @var \Detail\Blitline\Job\JobBuilder $jobBuilder */
+$jobBuilder = $blitline->getJobBuilder();
+$jobBuilder->addDefaultOption(
+    'functions.save',
+    array(
+        's3_destination' => array(
+            'bucket' => $getConfig('s3bucket'),
+            'key' => $getConfig('s3path') . '/' . $imageName . '-' . $imageSize . '_blitline.jpg',
+        ),
+    )
+);
+
+$job = $jobBuilder->createJob()
+    ->setSourceUrl($imageUrl)
+    ->addFunction(
+        $jobBuilder->createFunction()
+            ->setName('resize_to_fit')
+            ->setParams(
+                array(
+                    'width' => $imageSize,
+                    'height' => $imageSize,
+                    'only_shrink_larger' => true, // Don't upscale image
+                )
+            )
+            ->setSaveOptions(
+                array(
+                    'image_identifier' => $imageName,
+//                    's3_destination' => array(
+//                        'bucket' => $getConfig('s3bucket'),
+//                        'key' => $getConfig('s3path') . '/' . $imageName . '-' . $imageSize . '_blitline.jpg',
+//                    ),
+                ),
+                true // Merge with defaults
+            )
+    );
+
+if (isset($config['version'])) {
+    $job->setVersion($config['version']);
+}
+
+var_dump($job->toArray());
+exit;
+
 $job = array(
     'src' => $imageUrl,
     'v' => isset($config['version']) ? $config['version'] : '1.21',
