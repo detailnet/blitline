@@ -2,6 +2,7 @@
 
 namespace Detail\Blitline\Client;
 
+use Detail\Blitline\Job\DefinitionInterface;
 use Detail\Blitline\Job\JobBuilder;
 use Detail\Blitline\Job\JobBuilderInterface;
 use Guzzle\Common\Collection;
@@ -14,14 +15,16 @@ use Detail\Blitline\Exception\InvalidArgumentException;
 /**
  * Blitline API client.
  *
- * @method array pollJob(array $args = array())
- * @method array postJob(array $args = array())
+ * @method array pollJob(array $params = array())
+ * @method array postJob(mixed $job = array())
  */
 class BlitlineClient extends Client
 {
     const CLIENT_VERSION = '0.2.0';
 
-    /** @var  JobBuilderInterface */
+    /**
+     * @var JobBuilderInterface
+     */
     protected $jobBuilder;
 
     public static function factory($options = array())
@@ -85,6 +88,11 @@ class BlitlineClient extends Client
         $this->jobBuilder = $jobBuilder;
     }
 
+    /**
+     * @param string $baseUrl
+     * @param array|Collection $config
+     * @param JobBuilderInterface $jobBuilder
+     */
     public function __construct($baseUrl = '', $config = null, JobBuilderInterface $jobBuilder = null)
     {
         parent::__construct($baseUrl, $config);
@@ -92,5 +100,19 @@ class BlitlineClient extends Client
         if ($jobBuilder !== null) {
             $this->setJobBuilder($jobBuilder);
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function __call($method, $args)
+    {
+        if (isset($args[0]) && $args[0] instanceof DefinitionInterface) {
+            /** @var DefinitionInterface $definition */
+            $definition = $args[0];
+            $args[0] = $definition->toArray();
+        }
+
+        return parent::__call($method, $args);
     }
 }

@@ -2,12 +2,20 @@
 
 namespace Detail\Blitline\Job;
 
-class JobFunctionDefinition extends BaseDefinition
-    implements JobFunctionDefinitionInterface
+class JobFunctionDefinition extends BaseDefinition implements JobFunctionDefinitionInterface
 {
     const OPTION_NAME         = 'name';
     const OPTION_PARAMS       = 'params';
     const OPTION_SAVE_OPTIONS = 'save';
+
+//    protected $options = array(
+//        'save' => array(
+//            's3_destination' => array(
+//                'xxx' => 'xxx',
+//            ),
+//            'yyy' => 'yyy',
+//        ),
+//    );
 
     /**
      * @inheritdoc

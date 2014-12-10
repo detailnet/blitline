@@ -30,7 +30,7 @@ return array(
                     'type'        => 'string',
                     'required'    => true,
                 ),
-                /** @todo Define functions properly and remove "additionalParamters" as catch-all... */
+                /** @todo Define functions properly and remove "additionalParameters" as catch-all... */
 //                'functions' => array(
 //                    'description' => 'One or more operations you want performed on the source image',
 //                    'location'    => 'json',

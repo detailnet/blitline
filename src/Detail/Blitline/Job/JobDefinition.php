@@ -2,8 +2,7 @@
 
 namespace Detail\Blitline\Job;
 
-class JobDefinition extends BaseDefinition
-    implements JobDefinitionInterface
+class JobDefinition extends BaseDefinition implements JobDefinitionInterface
 {
     const OPTION_SOURCE       = 'src';
     const OPTION_POSTBACK_URL = 'postback_url';

@@ -8,15 +8,20 @@ use RecursiveArrayIterator;
 
 abstract class BaseDefinition
 {
-    protected $options;
+    protected $options = array();
 
-    protected function setOption($name, $value)
+    /**
+     * @inheritdoc
+     */
+    public function applyOptions(array $options)
     {
-        $this->options[$name] = $value;
+        $this->options = array_merge_recursive($this->options, $options);
+
+        return $this;
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
     public function toArray()
     {
@@ -54,5 +59,19 @@ abstract class BaseDefinition
         };
 
         return $toArray($data);
+    }
+
+    /**
+     * @param string $name
+     * @param mixed $value
+     */
+    protected function setOption($name, $value)
+    {
+        // Merge if both existing and new option value are arrays...
+        if (is_array($value) && isset($this->options[$name]) && is_array($this->options[$name])) {
+            $value = array_merge_recursive($this->options[$name], $value);
+        }
+
+        $this->options[$name] = $value;
     }
 }

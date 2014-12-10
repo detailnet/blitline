@@ -2,7 +2,7 @@
 
 namespace Detail\Blitline\Job;
 
-interface JobFunctionDefinitionInterface
+interface JobFunctionDefinitionInterface extends DefinitionInterface
 {
     /**
      * @param string $name
@@ -21,9 +21,4 @@ interface JobFunctionDefinitionInterface
      * @return JobFunctionDefinitionInterface
      */
     public function setSaveOptions(array $saveOptions);
-
-    /**
-     * @return array
-     */
-    public function toArray();
 }

@@ -2,7 +2,7 @@
 
 namespace Detail\Blitline\Job;
 
-interface JobDefinitionInterface
+interface JobDefinitionInterface extends DefinitionInterface
 {
     /**
      * @param string $url
@@ -27,9 +27,4 @@ interface JobDefinitionInterface
      * @return JobDefinitionInterface
      */
     public function addFunction($function);
-
-    /**
-     * @return array
-     */
-    public function toArray();
 }
