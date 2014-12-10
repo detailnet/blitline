@@ -64,7 +64,7 @@ if (isset($config['version'])) {
     $job->setVersion($config['version']);
 }
 
-var_dump($job->toArray());
+var_dump($job->toArray()['functions'][0]);
 exit;
 
 $job = array(
