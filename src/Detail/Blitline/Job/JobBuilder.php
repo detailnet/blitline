@@ -23,6 +23,42 @@ class JobBuilder implements JobBuilderInterface
     protected $defaultOptions = array();
 
     /**
+     * @return string
+     */
+    public function getJobClass()
+    {
+        return $this->jobClass;
+    }
+
+    /**
+     * @param string $jobClass
+     * @return JobBuilder
+     */
+    public function setJobClass($jobClass)
+    {
+        $this->jobClass = $jobClass;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFunctionClass()
+    {
+        return $this->functionClass;
+    }
+
+    /**
+     * @param string $functionClass
+     * @return JobBuilder
+     */
+    public function setFunctionClass($functionClass)
+    {
+        $this->functionClass = $functionClass;
+        return $this;
+    }
+
+    /**
      * @param string $name
      * @param mixed $default
      * @return mixed
@@ -44,16 +80,6 @@ class JobBuilder implements JobBuilderInterface
     }
 
     /**
-     * @param array $options
-     * @return JobBuilder
-     */
-    public function setDefaultOptions(array $options)
-    {
-        $this->defaultOptions = $options;
-        return $this;
-    }
-
-    /**
      * @param DefinitionInterface $definition
      * @return array
      */
@@ -65,22 +91,24 @@ class JobBuilder implements JobBuilderInterface
             return $options;
         }
 
-        $jobInterface         = $this->getDefinitonFqcn('JobDefinitionInterface');
-        $jobFunctionInterface = $this->getDefinitonFqcn('FunctionDefinitionInterface');
+        $jobInterface      = $this->getDefinitonFqcn('JobDefinitionInterface');
+        $functionInterface = $this->getDefinitonFqcn('FunctionDefinitionInterface');
 
         $prefix = null;
         $prefixSeparator = '.';
 
         if ($definition instanceof $jobInterface) {
             $prefix = 'job';
-        } elseif ($definition instanceof $jobFunctionInterface) {
+        } elseif ($definition instanceof $functionInterface) {
             $prefix = 'function';
         } else {
-            return $options;
+            return array();
         }
 
         $keyMatchesPrefix = function($key) use ($prefix, $prefixSeparator) {
-            return strpos($key, $prefix . $prefixSeparator) === 0;
+            $combinedPrefix = $prefix . $prefixSeparator;
+
+            return (strpos($key, $combinedPrefix) === 0) && (strlen($key) > strlen($combinedPrefix));
         };
 
         $matchingKeys = array_filter(array_keys($options), $keyMatchesPrefix);
@@ -97,10 +125,21 @@ class JobBuilder implements JobBuilderInterface
         return $matchingOptionsWithoutPrefix;
     }
 
+    /**
+     * @param array $options
+     * @return JobBuilder
+     */
+    public function setDefaultOptions(array $options)
+    {
+        $this->defaultOptions = $options;
+        return $this;
+    }
+
     public function __construct()
     {
-        $this->jobClass      = $this->getDefinitonFqcn('JobDefinition');
-        $this->functionClass = $this->getDefinitonFqcn('FunctionDefinition');
+        // Set default definition classes
+        $this->setJobClass($this->getDefinitonFqcn('JobDefinition'));
+        $this->setFunctionClass($this->getDefinitonFqcn('FunctionDefinition'));
     }
 
     /**
@@ -109,7 +148,7 @@ class JobBuilder implements JobBuilderInterface
     public function createJob()
     {
         return $this->createDefinition(
-            $this->jobClass,
+            $this->getJobClass(),
             $this->getDefinitonFqcn('JobDefinitionInterface')
         );
     }
@@ -120,7 +159,7 @@ class JobBuilder implements JobBuilderInterface
     public function createFunction()
     {
         return $this->createDefinition(
-            $this->functionClass,
+            $this->getFunctionClass(),
             $this->getDefinitonFqcn('FunctionDefinitionInterface')
         );
     }

@@ -13,11 +13,66 @@ class JobBuilderTest extends TestCase
      */
     protected $jobBuilder;
 
-    public function provideDefaultOptions()
+    public function provideJobDefinitionDefaultOptions()
     {
         return array(
             array(
-                array('key' => 'value'),
+                array(
+                ),
+                array(
+                ),
+            ),
+            array(
+                array(
+                    'job.src' => 'job.src',
+                    'function.name' => 'function.name'
+                ),
+                array(
+                    'src' => 'job.src',
+                ),
+            ),
+            array(
+                array(
+                    'src' => 'src',
+                    'job' => 'job',
+                    'function' => 'function',
+                    'job.' => 'job.',
+                    'function.' => 'function.',
+                ),
+                array(
+                ),
+            ),
+        );
+    }
+
+    public function provideFunctionDefinitionDefaultOptions()
+    {
+        return array(
+            array(
+                array(
+                ),
+                array(
+                ),
+            ),
+            array(
+                array(
+                    'job.src' => 'job.src',
+                    'function.name' => 'function.name'
+                ),
+                array(
+                    'name' => 'function.name',
+                ),
+            ),
+            array(
+                array(
+                    'src' => 'src',
+                    'job' => 'job',
+                    'function' => 'function',
+                    'job.' => 'job.',
+                    'function.' => 'function.',
+                ),
+                array(
+                ),
             ),
         );
     }
@@ -27,28 +82,32 @@ class JobBuilderTest extends TestCase
         $this->jobBuilder = new JobBuilder();
     }
 
-    public function testCanCreateJobDefinition()
+    public function testJobClassCanBeSet()
     {
-        $job = $this->jobBuilder->createJob();
+        $this->assertEquals(
+            'Detail\Blitline\Job\Definition\JobDefinition',
+            $this->jobBuilder->getJobClass()
+        );
 
-        $this->assertInstanceOf('Detail\Blitline\Job\Definition\JobDefinition', $job);
+        $class = 'CustomJobDefinitionClass';
+
+        $this->jobBuilder->setJobClass($class);
+
+        $this->assertEquals($class, $this->jobBuilder->getJobClass());
     }
 
-    public function testCanCreateFunctionDefinition()
+    public function testFunctionClassCanBeSet()
     {
-        $job = $this->jobBuilder->createFunction();
+        $this->assertEquals(
+            'Detail\Blitline\Job\Definition\FunctionDefinition',
+            $this->jobBuilder->getFunctionClass()
+        );
 
-        $this->assertInstanceOf('Detail\Blitline\Job\Definition\FunctionDefinition', $job);
-    }
+        $class = 'CustomFunctionDefinitionClass';
 
-    public function testDefinitionCreationWithMissingClassThrowsException()
-    {
-        /** @todo Implement */
-    }
+        $this->jobBuilder->setFunctionClass($class);
 
-    public function testDefinitionCreationWithInvalidInterfaceThrowsException()
-    {
-        /** @todo Implement */
+        $this->assertEquals($class, $this->jobBuilder->getFunctionClass());
     }
 
     public function testDefaultOptionCanBeSet()
@@ -68,12 +127,86 @@ class JobBuilderTest extends TestCase
         );
     }
 
+    public function testDefaultOptionsCanBeSet()
+    {
+        $options = array('key' => 'value');
+
+        $this->assertEmpty($this->jobBuilder->getDefaultOptions());
+
+        $this->jobBuilder->setDefaultOptions($options);
+
+        $this->assertEquals($options, $this->jobBuilder->getDefaultOptions());
+    }
+
+    public function testCanCreateJobDefinition()
+    {
+        $job = $this->jobBuilder->createJob();
+
+        $this->assertInstanceOf('Detail\Blitline\Job\Definition\JobDefinition', $job);
+    }
+
+    public function testCanCreateFunctionDefinition()
+    {
+        $job = $this->jobBuilder->createFunction();
+
+        $this->assertInstanceOf('Detail\Blitline\Job\Definition\FunctionDefinition', $job);
+    }
+
+    public function testDefinitionCreationWithMissingClassThrowsException()
+    {
+        $this->setExpectedException('Detail\Blitline\Exception\RuntimeException');
+
+        $this->jobBuilder->setJobClass('NonExistingDefinitionClass');
+        $this->jobBuilder->createJob();
+    }
+
+    public function testDefinitionCreationWithInvalidInterfaceThrowsException()
+    {
+        $this->setExpectedException('Detail\Blitline\Exception\RuntimeException');
+
+        // Using existing class which doesn't implement Detail\Blitline\Job\JobBuilder\Definition\DefinitionInterface
+        $this->jobBuilder->setJobClass('Detail\Blitline\Job\JobBuilder');
+        $this->jobBuilder->createJob();
+    }
+
     /**
      * @param array $options
-     * @dataProvider provideDefaultOptions
+     * @param array $expectedOptions
+     * @dataProvider provideJobDefinitionDefaultOptions
      */
-    public function testDefaultOptionsAreApplied(array $options)
+    public function testDefaultOptionsCanBeGetForJobDefinition(array $options, array $expectedOptions)
     {
-        /** @todo Implement */
+        $this->jobBuilder->setDefaultOptions($options);
+
+        $jobDefinition = $this->jobBuilder->createJob();
+
+        $this->assertEquals($expectedOptions, $this->jobBuilder->getDefaultOptions($jobDefinition));
+    }
+
+    /**
+     * @param array $options
+     * @param array $expectedOptions
+     * @dataProvider provideFunctionDefinitionDefaultOptions
+     */
+    public function testDefaultOptionsCanBeGetForFunctionDefinition(array $options, array $expectedOptions)
+    {
+        $this->jobBuilder->setDefaultOptions($options);
+
+        $functionDefinition = $this->jobBuilder->createFunction();
+
+        $this->assertEquals($expectedOptions, $this->jobBuilder->getDefaultOptions($functionDefinition));
+    }
+
+    public function testDefaultOptionsAreEmptyUnknownDefinition()
+    {
+        $this->jobBuilder->setDefaultOptions(
+            array('job.src' => 'job.src', 'function.name' => 'function.name')
+        );
+
+        $definition = $this->getMock('Detail\Blitline\Job\Definition\DefinitionInterface');
+
+        /** @var \Detail\Blitline\Job\Definition\DefinitionInterface $definition */
+
+        $this->assertEquals(array(), $this->jobBuilder->getDefaultOptions($definition));
     }
 }
