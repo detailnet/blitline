@@ -43,6 +43,20 @@ class JobBuilder implements JobBuilderInterface
         return $this;
     }
 
+    /**
+     * @param array $options
+     * @return JobBuilder
+     */
+    public function setDefaultOptions(array $options)
+    {
+        $this->defaultOptions = $options;
+        return $this;
+    }
+
+    /**
+     * @param DefinitionInterface $definition
+     * @return array
+     */
     public function getDefaultOptions(DefinitionInterface $definition = null)
     {
         $options = $this->defaultOptions;
@@ -51,8 +65,8 @@ class JobBuilder implements JobBuilderInterface
             return $options;
         }
 
-        $jobInterface         = $this->getFqcn('JobDefinitionInterface');
-        $jobFunctionInterface = $this->getFqcn('JobFunctionDefinitionInterface');
+        $jobInterface         = $this->getDefinitonFqcn('JobDefinitionInterface');
+        $jobFunctionInterface = $this->getDefinitonFqcn('FunctionDefinitionInterface');
 
         $prefix = null;
         $prefixSeparator = '.';
@@ -85,8 +99,8 @@ class JobBuilder implements JobBuilderInterface
 
     public function __construct()
     {
-        $this->jobClass      = $this->getFqcn('JobDefinition');
-        $this->functionClass = $this->getFqcn('JobFunctionDefinition');
+        $this->jobClass      = $this->getDefinitonFqcn('JobDefinition');
+        $this->functionClass = $this->getDefinitonFqcn('FunctionDefinition');
     }
 
     /**
@@ -94,7 +108,10 @@ class JobBuilder implements JobBuilderInterface
      */
     public function createJob()
     {
-        return $this->createDefinition($this->jobClass, $this->getFqcn('JobDefinitionInterface'));
+        return $this->createDefinition(
+            $this->jobClass,
+            $this->getDefinitonFqcn('JobDefinitionInterface')
+        );
     }
 
     /**
@@ -102,7 +119,10 @@ class JobBuilder implements JobBuilderInterface
      */
     public function createFunction()
     {
-        return $this->createDefinition($this->functionClass, $this->getFqcn('JobFunctionDefinitionInterface'));
+        return $this->createDefinition(
+            $this->functionClass,
+            $this->getDefinitonFqcn('FunctionDefinitionInterface')
+        );
     }
 
     /**
@@ -134,8 +154,8 @@ class JobBuilder implements JobBuilderInterface
      * @param string $class
      * @return string
      */
-    private function getFqcn($class)
+    protected function getDefinitonFqcn($class)
     {
-        return __NAMESPACE__ . '\\' . $class;
+        return __NAMESPACE__ . '\\Definition\\' . $class;
     }
 }
