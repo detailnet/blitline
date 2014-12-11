@@ -1,6 +1,6 @@
 <?php
 
-namespace Detail\Blitline\Job;
+namespace Detail\Blitline\Job\Definition;
 
 interface JobDefinitionInterface extends DefinitionInterface
 {
@@ -17,13 +17,13 @@ interface JobDefinitionInterface extends DefinitionInterface
     public function setVersion($version);
 
     /**
-     * @param array|JobFunctionDefinitionInterface[] $functions
+     * @param array|FunctionDefinitionInterface[] $functions
      * @return JobDefinitionInterface
      */
     public function setFunctions(array $functions);
 
     /**
-     * @param array|JobFunctionDefinitionInterface $function
+     * @param array|FunctionDefinitionInterface $function
      * @return JobDefinitionInterface
      */
     public function addFunction($function);

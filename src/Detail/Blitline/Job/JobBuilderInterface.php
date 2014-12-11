@@ -5,12 +5,12 @@ namespace Detail\Blitline\Job;
 interface JobBuilderInterface
 {
     /**
-     * @return JobDefinitionInterface
+     * @return Definition\JobDefinitionInterface
      */
     public function createJob();
 
     /**
-     * @return JobFunctionDefinitionInterface
+     * @return Definition\FunctionDefinitionInterface
      */
     public function createFunction();
 }

@@ -2,15 +2,15 @@
 
 namespace Detail\Blitline\Client;
 
-use Detail\Blitline\Job\DefinitionInterface;
-use Detail\Blitline\Job\JobBuilder;
-use Detail\Blitline\Job\JobBuilderInterface;
 use Guzzle\Common\Collection;
 use Guzzle\Service\Client;
 use Guzzle\Service\Description\ServiceDescription;
 
 use Detail\Blitline\Client\Listener\ExpectedContentTypeListener;
 use Detail\Blitline\Exception\InvalidArgumentException;
+use Detail\Blitline\Job\Definition\DefinitionInterface;
+use Detail\Blitline\Job\JobBuilder;
+use Detail\Blitline\Job\JobBuilderInterface;
 
 /**
  * Blitline API client.

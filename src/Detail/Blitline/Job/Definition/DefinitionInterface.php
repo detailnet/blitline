@@ -1,6 +1,6 @@
 <?php
 
-namespace Detail\Blitline\Job;
+namespace Detail\Blitline\Job\Definition;
 
 interface DefinitionInterface
 {

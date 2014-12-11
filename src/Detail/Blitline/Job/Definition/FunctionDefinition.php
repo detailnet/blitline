@@ -1,8 +1,8 @@
 <?php
 
-namespace Detail\Blitline\Job;
+namespace Detail\Blitline\Job\Definition;
 
-class JobFunctionDefinition extends BaseDefinition implements JobFunctionDefinitionInterface
+class FunctionDefinition extends BaseDefinition implements FunctionDefinitionInterface
 {
     const OPTION_NAME         = 'name';
     const OPTION_PARAMS       = 'params';

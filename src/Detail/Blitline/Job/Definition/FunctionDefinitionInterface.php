@@ -1,24 +1,24 @@
 <?php
 
-namespace Detail\Blitline\Job;
+namespace Detail\Blitline\Job\Definition;
 
-interface JobFunctionDefinitionInterface extends DefinitionInterface
+interface FunctionDefinitionInterface extends DefinitionInterface
 {
     /**
      * @param string $name
-     * @return JobFunctionDefinitionInterface
+     * @return FunctionDefinitionInterface
      */
     public function setName($name);
 
     /**
      * @param array $params
-     * @return JobFunctionDefinitionInterface
+     * @return FunctionDefinitionInterface
      */
     public function setParams(array $params);
 
     /**
      * @param array $saveOptions
-     * @return JobFunctionDefinitionInterface
+     * @return FunctionDefinitionInterface
      */
     public function setSaveOptions(array $saveOptions);
 }

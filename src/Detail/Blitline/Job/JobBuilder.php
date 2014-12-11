@@ -3,6 +3,7 @@
 namespace Detail\Blitline\Job;
 
 use Detail\Blitline\Exception\RuntimeException;
+use Detail\Blitline\Job\Definition\DefinitionInterface;
 
 class JobBuilder implements JobBuilderInterface
 {
