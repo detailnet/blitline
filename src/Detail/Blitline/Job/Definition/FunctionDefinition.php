@@ -8,15 +8,6 @@ class FunctionDefinition extends BaseDefinition implements FunctionDefinitionInt
     const OPTION_PARAMS       = 'params';
     const OPTION_SAVE_OPTIONS = 'save';
 
-//    protected $options = array(
-//        'save' => array(
-//            's3_destination' => array(
-//                'xxx' => 'xxx',
-//            ),
-//            'yyy' => 'yyy',
-//        ),
-//    );
-
     /**
      * @inheritdoc
      */
@@ -24,6 +15,14 @@ class FunctionDefinition extends BaseDefinition implements FunctionDefinitionInt
     {
         $this->setOption(self::OPTION_NAME, $name);
         return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getName()
+    {
+        return $this->getOption(self::OPTION_NAME);
     }
 
     /**
@@ -38,9 +37,25 @@ class FunctionDefinition extends BaseDefinition implements FunctionDefinitionInt
     /**
      * @inheritdoc
      */
+    public function getParams()
+    {
+        return $this->getOption(self::OPTION_PARAMS);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function setSaveOptions(array $saveOptions)
     {
         $this->setOption(self::OPTION_SAVE_OPTIONS, $saveOptions);
         return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSaveOptions()
+    {
+        return $this->getOption(self::OPTION_SAVE_OPTIONS);
     }
 }
