@@ -6,18 +6,63 @@ use ArrayObject;
 use RecursiveIteratorIterator;
 use RecursiveArrayIterator;
 
+use Zend\Stdlib\ArrayUtils;
+
 abstract class BaseDefinition
 {
     protected $options = array();
+
+    /**
+     * @return array
+     */
+    public function getOptions()
+    {
+        return $this->options;
+    }
+
+    /**
+     * @param array $options
+     * @return BaseDefinition
+     */
+    public function setOptions($options)
+    {
+        $this->options = $options;
+        return $this;
+    }
 
     /**
      * @inheritdoc
      */
     public function applyOptions(array $options)
     {
-        $this->options = array_merge_recursive($this->options, $options);
-
+        $this->options = ArrayUtils::merge($this->options, $options);
         return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param mixed $value
+     * @return BaseDefinition
+     */
+    public function setOption($name, $value)
+    {
+        // Merge if both existing and new option value are arrays...
+        if (is_array($value) && isset($this->options[$name]) && is_array($this->options[$name])) {
+            $value = ArrayUtils::merge($this->options[$name], $value);
+        }
+
+        $this->options[$name] = $value;
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param mixed $default
+     * @return mixed
+     */
+    public function getOption($name, $default = null)
+    {
+        return array_key_exists($name, $this->options) ? $this->options[$name] : $default;
     }
 
     /**
@@ -59,19 +104,5 @@ abstract class BaseDefinition
         };
 
         return $toArray($data);
-    }
-
-    /**
-     * @param string $name
-     * @param mixed $value
-     */
-    protected function setOption($name, $value)
-    {
-        // Merge if both existing and new option value are arrays...
-        if (is_array($value) && isset($this->options[$name]) && is_array($this->options[$name])) {
-            $value = array_merge_recursive($this->options[$name], $value);
-        }
-
-        $this->options[$name] = $value;
     }
 }
