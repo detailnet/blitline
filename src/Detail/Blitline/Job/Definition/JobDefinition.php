@@ -90,7 +90,6 @@ class JobDefinition extends BaseDefinition implements JobDefinitionInterface
     public function addFunction($function)
     {
         /** @todo Check that is array or Function object */
-//        $this->options[self::OPTION_FUNCTIONS][] = $function;
         $this->setFunctions(array($function)); // Will get merged with existing functions
         return $this;
     }

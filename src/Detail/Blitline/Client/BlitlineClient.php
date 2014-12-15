@@ -27,7 +27,7 @@ class BlitlineClient extends Client
      */
     protected $jobBuilder;
 
-    public static function factory($options = array())
+    public static function factory($options = array(), JobBuilderInterface $jobBuilder = null)
     {
         $defaultOptions = array('base_url' => 'https://api.blitline.com/');
 
@@ -45,7 +45,7 @@ class BlitlineClient extends Client
 
         $config = Collection::fromConfig($options, $defaultOptions);
 
-        $client = new self($config->get('base_url'), $config);
+        $client = new self($config->get('base_url'), $config, $jobBuilder);
         $client->setDefaultOption(
             'query',
             array(
@@ -82,10 +82,12 @@ class BlitlineClient extends Client
 
     /**
      * @param JobBuilderInterface $jobBuilder
+     * @return BlitlineClient
      */
     public function setJobBuilder(JobBuilderInterface $jobBuilder)
     {
         $this->jobBuilder = $jobBuilder;
+        return $this;
     }
 
     /**
