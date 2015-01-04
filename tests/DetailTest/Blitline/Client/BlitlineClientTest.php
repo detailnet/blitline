@@ -100,7 +100,16 @@ class BlitlineClientTest extends TestCase
         $client = BlitlineClient::factory($config);
 
         $this->assertInstanceOf('Guzzle\Service\Command\OperationCommand', $client->getCommand('pollJob'));
-        $this->assertInstanceOf('Guzzle\Service\Command\OperationCommand', $client->getCommand('postJob'));
+        $this->assertEquals(
+            'Detail\Blitline\Response\JobProcessed',
+            $client->getCommand('pollJob')->getOperation()->getResponseClass()
+        );
+
+        $this->assertInstanceOf('Guzzle\Service\Command\OperationCommand', $client->getCommand('submitJob'));
+        $this->assertEquals(
+            'Detail\Blitline\Response\JobSubmitted',
+            $client->getCommand('submitJob')->getOperation()->getResponseClass()
+        );
     }
 
     public function testJobBuilderCanBeSet()

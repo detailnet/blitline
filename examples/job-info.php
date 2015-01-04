@@ -14,4 +14,8 @@ $blitline = BlitlineClient::factory($config);
 
 $response = $blitline->pollJob(array('jobId' => $jobId));
 
-var_dump($response);
+if ($response->isError()) {
+    var_dump($response->getError());
+} else {
+    var_dump($response->getJobId(), $response->getImages());
+}

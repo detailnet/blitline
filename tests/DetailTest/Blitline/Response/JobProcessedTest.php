@@ -1,0 +1,61 @@
+<?php
+
+namespace DetailTest\Blitline\Response;
+
+use Detail\Blitline\Response\JobProcessed;
+
+class JobProcessedTest extends ResponseTestCase
+{
+    public function testResponseCanBeCreatedFromGuzzleCommand()
+    {
+        $response = JobProcessed::fromCommand(
+            $this->getCommand(array('results' => array()))
+        );
+
+        $this->assertInstanceOf('Detail\Blitline\Response\JobProcessed', $response);
+
+        $this->setExpectedException('Detail\Blitline\Exception\RuntimeException');
+        JobProcessed::fromCommand($this->getCommand(array()));
+    }
+
+    public function testImagesCanBeGet()
+    {
+        $images = array(array('image_identifier' => 'some-image-identifier'));
+        $result = array('images' => $images);
+
+        $response = $this->getResponse($result);
+
+        $this->assertEquals($images, $response->getImages());
+    }
+
+    public function testOriginalMetaCanBeGet()
+    {
+        $meta = array(array('key' => 'value'));
+        $result = array('original_meta' => $meta);
+
+        $response = $this->getResponse($result);
+
+        $this->assertEquals($meta, $response->getOriginalMeta());
+    }
+
+    public function testErrorsAreHandled()
+    {
+        $errorMessage = 'message';
+        $result = array('error' => $errorMessage);
+
+        $response = $this->getResponse($result);
+
+        $this->assertFalse($response->isSuccess());
+        $this->assertTrue($response->isError());
+        $this->assertEquals($errorMessage, $response->getError());
+    }
+
+    /**
+     * @param array $data
+     * @return JobProcessed
+     */
+    protected function getResponse(array $data)
+    {
+        return parent::getResponse('Detail\Blitline\Response\JobProcessed', $data);
+    }
+}

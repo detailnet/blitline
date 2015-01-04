@@ -17,8 +17,9 @@ return array(
                     'required'    => true,
                 ),
             ),
+            'responseClass' => 'Detail\Blitline\Response\JobProcessed',
         ),
-        'postJob' => array(
+        'submitJob' => array(
             'httpMethod'       => 'POST',
             'uri'              => 'job',
             'summary'          => 'Submitting a job',
@@ -41,6 +42,7 @@ return array(
             'additionalParameters' => array(
                 'location' => 'json',
             ),
+            'responseClass' => 'Detail\Blitline\Response\JobSubmitted',
         ),
     ),
 );

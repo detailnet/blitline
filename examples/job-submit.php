@@ -64,6 +64,10 @@ if (isset($config['version'])) {
     $job->setVersion($config['version']);
 }
 
-$response = $blitline->postJob($job);
+$response = $blitline->submitJob($job);
 
-var_dump($response);
+if ($response->isError()) {
+    var_dump($response->getError());
+} else {
+    var_dump($response->getJobId());
+}

@@ -11,16 +11,17 @@ use Detail\Blitline\Exception\InvalidArgumentException;
 use Detail\Blitline\Job\Definition\DefinitionInterface;
 use Detail\Blitline\Job\JobBuilder;
 use Detail\Blitline\Job\JobBuilderInterface;
+use Detail\Blitline\Response;
 
 /**
  * Blitline API client.
  *
- * @method array pollJob(array $params = array())
- * @method array postJob(mixed $job = array())
+ * @method Response\JobProcessed pollJob(array $params = array())
+ * @method Response\JobSubmitted submitJob(mixed $job = array())
  */
 class BlitlineClient extends Client
 {
-    const CLIENT_VERSION = '0.2.0';
+    const CLIENT_VERSION = '0.3.0';
 
     /**
      * @var JobBuilderInterface

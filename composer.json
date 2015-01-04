@@ -30,7 +30,11 @@
     },
     "autoload": {
         "psr-0": {
-            "Detail\\Blitline\\": "src/",
+            "Detail\\Blitline\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-0": {
             "DetailTest\\Blitline\\": "tests/"
         }
     },
