@@ -6,11 +6,11 @@ return array(
     'operations'  => array(
         'pollJob' => array(
             'httpMethod'       => 'GET',
-            'uri'              => 'https://cache.blitline.com/listen/{jobId}',
+            'uri'              => 'https://cache.blitline.com/listen/{job_id}',
             'summary'          => 'Polling for a job',
             'documentationUrl' => 'http://www.blitline.com/docs/polling',
             'parameters'       => array(
-                'jobId' => array(
+                'job_id' => array(
                     'description' => 'The ID of the job you wish to poll',
                     'location'    => 'uri',
                     'type'        => 'string',

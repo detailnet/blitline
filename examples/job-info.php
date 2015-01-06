@@ -4,18 +4,18 @@ use Detail\Blitline\Client\BlitlineClient;
 
 $config = require 'bootstrap.php';
 
-$jobId = isset($_GET['jobId']) ? $_GET['jobId'] : null;
+$jobId = isset($_GET['job_id']) ? $_GET['job_id'] : null;
 
 if (!$jobId) {
-    throw new RuntimeException('Missing or invalid parameter "jobId"');
+    throw new RuntimeException('Missing or invalid parameter "job_id"');
 }
 
 $blitline = BlitlineClient::factory($config);
 
-$response = $blitline->pollJob(array('jobId' => $jobId));
+$response = $blitline->pollJob(array('job_id' => $jobId));
 
 if ($response->isError()) {
     var_dump($response->getError());
 } else {
-    var_dump($response->getJobId(), $response->getImages());
+    var_dump($response->getResult());
 }
