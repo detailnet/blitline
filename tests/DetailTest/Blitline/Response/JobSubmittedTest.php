@@ -22,8 +22,8 @@ class JobSubmittedTest extends ResponseTestCase
      * @param array $data
      * @return JobSubmitted
      */
-    protected function getResponse(array $data)
+    protected function getJobSubmittedResponse(array $data)
     {
-        return parent::getResponse('Detail\Blitline\Response\JobSubmitted', $data);
+        return $this->getResponse('Detail\Blitline\Response\JobSubmitted', $data);
     }
 }

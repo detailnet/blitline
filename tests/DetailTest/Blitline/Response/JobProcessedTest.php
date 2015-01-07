@@ -23,7 +23,7 @@ class JobProcessedTest extends ResponseTestCase
         $images = array(array('image_identifier' => 'some-image-identifier'));
         $result = array('images' => $images);
 
-        $response = $this->getResponse($result);
+        $response = $this->getJobProcessedResponse($result);
 
         $this->assertEquals($images, $response->getImages());
     }
@@ -33,7 +33,7 @@ class JobProcessedTest extends ResponseTestCase
         $meta = array(array('key' => 'value'));
         $result = array('original_meta' => $meta);
 
-        $response = $this->getResponse($result);
+        $response = $this->getJobProcessedResponse($result);
 
         $this->assertEquals($meta, $response->getOriginalMeta());
     }
@@ -42,8 +42,8 @@ class JobProcessedTest extends ResponseTestCase
      * @param array $data
      * @return JobProcessed
      */
-    protected function getResponse(array $data)
+    protected function getJobProcessedResponse(array $data)
     {
-        return parent::getResponse('Detail\Blitline\Response\JobProcessed', $data);
+        return $this->getResponse('Detail\Blitline\Response\JobProcessed', $data);
     }
 }

@@ -81,7 +81,15 @@ abstract class BaseResponse implements
     {
         $result = $this->getResult();
 
-        return isset($result['error']) ? $result['error'] : null;
+        $error = null;
+
+        if (isset($result['errors']) && is_array($result['errors'])) {
+            $error = current($result['errors']);
+        } else if (isset($result['error'])) {
+            $error = $result['error'];
+        }
+
+        return ($error !== null) ? (string) $error : null;
     }
 
     /**
