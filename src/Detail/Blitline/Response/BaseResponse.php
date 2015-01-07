@@ -85,7 +85,7 @@ abstract class BaseResponse implements
 
         if (isset($result['errors']) && is_array($result['errors'])) {
             $error = current($result['errors']);
-        } else if (isset($result['error'])) {
+        } elseif (isset($result['error'])) {
             $error = $result['error'];
         }
 
