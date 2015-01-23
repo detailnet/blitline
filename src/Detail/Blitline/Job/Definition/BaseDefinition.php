@@ -94,8 +94,9 @@ abstract class BaseDefinition
             }
         }
 
-        // Helper function which recursively converts to a normal (recursive) array again
-        $toArray = function($data) use (&$toArray) { // Reference is required for "recursive closure"...
+        // Helper function which recursively converts to a normal (recursive) array again.
+        // Reference is required for "recursive closure"...
+        $toArray = function($data) use (&$toArray) {
             if ($data instanceof ArrayObject) {
                 $data = (array) $data;
             }
