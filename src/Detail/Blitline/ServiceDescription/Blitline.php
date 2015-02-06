@@ -18,6 +18,9 @@ return array(
                 ),
             ),
             'responseClass' => 'Detail\Blitline\Response\JobProcessed',
+            'data' => array(
+                'requestOptions' => array('timeout' => 60 * 10), // Wait 10 minutes for the completion of a job
+            ),
         ),
         'submitJob' => array(
             'httpMethod'       => 'POST',

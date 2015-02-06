@@ -9,6 +9,7 @@ use Guzzle\Service\Description\ServiceDescription;
 
 use Detail\Blitline\Client\Subscriber\ErrorHandlerSubscriber;
 use Detail\Blitline\Client\Subscriber\ExpectedContentTypeSubscriber;
+use Detail\Blitline\Client\Subscriber\RequestOptionsSubscriber;
 use Detail\Blitline\Exception\InvalidArgumentException;
 use Detail\Blitline\Job\Definition\DefinitionInterface;
 use Detail\Blitline\Job\JobBuilder;
@@ -39,8 +40,14 @@ class BlitlineClient extends Client
     {
         $defaultOptions = array(
             'base_url' => 'https://api.blitline.com/',
-//            'connect_timeout' => 1,
-//            'timeout'  => 3, // 60 seconds, may be overridden by individual operations
+            'request.options' => array(
+                // Float describing the number of seconds to wait while trying to connect to a server.
+                // 0 was the default (wait indefinitely).
+                'connect_timeout' => 10,
+                // Float describing the timeout of the request in seconds.
+                // 0 was the default (wait indefinitely).
+                'timeout' => 60, // 60 seconds, may be overridden by individual operations
+            ),
         );
 
         $requiredOptions = array(
@@ -70,6 +77,7 @@ class BlitlineClient extends Client
                 'Accept' => 'application/json',
             )
         );
+
         $client->setDescription(
             ServiceDescription::factory(__DIR__ . '/../ServiceDescription/Blitline.php')
         );
@@ -77,6 +85,7 @@ class BlitlineClient extends Client
 
         $client->getEventDispatcher()->addSubscriber(new ErrorHandlerSubscriber());
         $client->getEventDispatcher()->addSubscriber(new ExpectedContentTypeSubscriber());
+        $client->getEventDispatcher()->addSubscriber(new RequestOptionsSubscriber());
 
         return $client;
     }
@@ -101,6 +110,14 @@ class BlitlineClient extends Client
     {
         $this->jobBuilder = $jobBuilder;
         return $this;
+    }
+
+    /**
+     * @return \Guzzle\Http\Message\RequestFactoryInterface
+     */
+    public function getRequestFactory()
+    {
+        return $this->requestFactory;
     }
 
     /**

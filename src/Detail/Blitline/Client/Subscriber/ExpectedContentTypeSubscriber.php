@@ -3,6 +3,7 @@
 namespace Detail\Blitline\Client\Subscriber;
 
 use Guzzle\Common\Event;
+
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class ExpectedContentTypeSubscriber implements
@@ -16,6 +17,9 @@ class ExpectedContentTypeSubscriber implements
         return array('command.after_send' => 'addExpectedContentType');
     }
 
+    /**
+     * @param Event $event
+     */
     public function addExpectedContentType(Event $event)
     {
         /** @var \Guzzle\Service\Command\OperationCommand $command */
