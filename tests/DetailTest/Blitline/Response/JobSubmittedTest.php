@@ -14,7 +14,7 @@ class JobSubmittedTest extends ResponseTestCase
 
         $this->assertInstanceOf('Detail\Blitline\Response\JobSubmitted', $response);
 
-        $this->setExpectedException('Detail\Blitline\Exception\RuntimeException');
+        $this->setExpectedException('Detail\Blitline\Client\Exception\ServerException');
         JobSubmitted::fromCommand($this->getCommand(array()));
     }
 

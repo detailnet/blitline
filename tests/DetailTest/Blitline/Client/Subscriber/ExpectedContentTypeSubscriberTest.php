@@ -6,21 +6,21 @@ use PHPUnit_Framework_TestCase as TestCase;
 
 use Guzzle\Common\Event;
 
-use Detail\Blitline\Client\Listener\ExpectedContentTypeListener;
+use Detail\Blitline\Client\Subscriber\ExpectedContentTypeSubscriber;
 
-class ExpectedContentTypeListenerTest extends TestCase
+class ExpectedContentTypeSubscriberTest extends TestCase
 {
-    /** @var ExpectedContentTypeListener */
-    protected $listener;
+    /** @var ExpectedContentTypeSubscriber */
+    protected $subscriber;
 
     protected function setUp()
     {
-        $this->listener = new ExpectedContentTypeListener();
+        $this->subscriber = new ExpectedContentTypeSubscriber();
     }
 
     public function testIsSubscribedToAfterSendEvent()
     {
-        $events = $this->listener->getSubscribedEvents();
+        $events = $this->subscriber->getSubscribedEvents();
 
         $this->assertArrayHasKey('command.after_send', $events);
     }
@@ -51,7 +51,7 @@ class ExpectedContentTypeListenerTest extends TestCase
 
         $this->assertNull($command->get('command.expects'));
 
-        $this->listener->addExpectedContentType($event);
+        $this->subscriber->addExpectedContentType($event);
 
         $this->assertEquals('application/json', $command->get('command.expects'));
     }

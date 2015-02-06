@@ -2,8 +2,10 @@
 
 namespace  Detail\Blitline\Response;
 
+use Detail\Blitline\Client\Exception;
 use Detail\Blitline\Exception\RuntimeException;
 
+use Guzzle\Common\Exception\RuntimeException as GuzzleRuntimeException;
 use Guzzle\Service\Command\OperationCommand;
 use Guzzle\Service\Command\ResponseClassInterface as GuzzleResponseInterface;
 
@@ -22,13 +24,23 @@ abstract class BaseResponse implements
      */
     public static function fromCommand(OperationCommand $command)
     {
-        $response = $command->getResponse()->json();
+        // Note that we should only get successful responses.
+        // For 4xx and 5xx errors an exception was thrown by our error handler.
+        // The only cases left to handle here are invalid JSON and an unexpected response format.
 
-        if (!isset($response['results']) || !is_array($response['results'])) {
-            throw new RuntimeException('Unexpected response format; contains no result');
+        $response = $command->getResponse();
+
+        try {
+            $responseData = $response->json();
+        } catch (GuzzleRuntimeException $e) {
+            throw new Exception\ServerException($e->getMessage(), 0, $e);
         }
 
-        return new static($response['results']);
+        if (!isset($responseData['results']) || !is_array($responseData['results'])) {
+            throw new Exception\ServerException('Unexpected response format; contains no result');
+        }
+
+        return new static($responseData['results']);
     }
 
     /**
@@ -56,40 +68,6 @@ abstract class BaseResponse implements
         }
 
         return $result;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isSuccess()
-    {
-        return !$this->isError();
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isError()
-    {
-        return $this->getError() !== null;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getError()
-    {
-        $result = $this->getResult();
-
-        $error = null;
-
-        if (isset($result['errors']) && is_array($result['errors'])) {
-            $error = current($result['errors']);
-        } elseif (isset($result['error'])) {
-            $error = $result['error'];
-        }
-
-        return ($error !== null) ? (string) $error : null;
     }
 
     /**

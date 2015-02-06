@@ -1,11 +1,12 @@
 <?php
 
-namespace Detail\Blitline\Client\Listener;
+namespace Detail\Blitline\Client\Subscriber;
 
 use Guzzle\Common\Event;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class ExpectedContentTypeListener implements EventSubscriberInterface
+class ExpectedContentTypeSubscriber implements
+    EventSubscriberInterface
 {
     /**
      * {@inheritDoc}

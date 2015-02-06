@@ -14,8 +14,4 @@ $blitline = BlitlineClient::factory($config);
 
 $response = $blitline->pollJob(array('job_id' => $jobId));
 
-if ($response->isError()) {
-    var_dump($response->getError());
-} else {
-    var_dump($response->getResult());
-}
+var_dump($response->getResult());

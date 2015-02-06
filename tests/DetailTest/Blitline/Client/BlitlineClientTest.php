@@ -4,10 +4,10 @@ namespace DetailTest\Blitline\Client;
 
 use PHPUnit_Framework_TestCase as TestCase;
 
-use Guzzle\Service\Description\ServiceDescription;
+//use Guzzle\Service\Description\ServiceDescription;
 
 use Detail\Blitline\Client\BlitlineClient;
-use Detail\Blitline\Client\Listener\ExpectedContentTypeListener;
+use Detail\Blitline\Client\Subscriber\ExpectedContentTypeSubscriber;
 use Detail\Blitline\Job\JobBuilder;
 
 class BlitlineClientTest extends TestCase
@@ -53,7 +53,7 @@ class BlitlineClientTest extends TestCase
             foreach ($listeners as $listenerConfig) {
                 list($listener, $callback) = $listenerConfig;
 
-                if ($listener instanceof ExpectedContentTypeListener) {
+                if ($listener instanceof ExpectedContentTypeSubscriber) {
                     $hasExpectedContentTypeListener = true;
                 }
             }
@@ -61,7 +61,7 @@ class BlitlineClientTest extends TestCase
 
         $this->assertTrue(
             $hasExpectedContentTypeListener,
-            'BlitlineClient is missing the listener of type "Detail\Blitline\Client\Listener\ExpectedContentTypeListener"'
+            'BlitlineClient is missing the listener of type "Detail\Blitline\Client\Subscriber\ExpectedContentTypeSubscriber"'
         );
     }
 

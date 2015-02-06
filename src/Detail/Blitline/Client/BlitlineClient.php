@@ -3,10 +3,12 @@
 namespace Detail\Blitline\Client;
 
 use Guzzle\Common\Collection;
+use Guzzle\Http\Exception as GuzzleHttpException;
 use Guzzle\Service\Client;
 use Guzzle\Service\Description\ServiceDescription;
 
-use Detail\Blitline\Client\Listener\ExpectedContentTypeListener;
+use Detail\Blitline\Client\Subscriber\ErrorHandlerSubscriber;
+use Detail\Blitline\Client\Subscriber\ExpectedContentTypeSubscriber;
 use Detail\Blitline\Exception\InvalidArgumentException;
 use Detail\Blitline\Job\Definition\DefinitionInterface;
 use Detail\Blitline\Job\JobBuilder;
@@ -21,16 +23,25 @@ use Detail\Blitline\Response;
  */
 class BlitlineClient extends Client
 {
-    const CLIENT_VERSION = '0.3.1';
+    const CLIENT_VERSION = '0.4.0';
 
     /**
      * @var JobBuilderInterface
      */
     protected $jobBuilder;
 
+    /**
+     * @param array $options
+     * @param JobBuilderInterface $jobBuilder
+     * @return BlitlineClient
+     */
     public static function factory($options = array(), JobBuilderInterface $jobBuilder = null)
     {
-        $defaultOptions = array('base_url' => 'https://api.blitline.com/');
+        $defaultOptions = array(
+            'base_url' => 'https://api.blitline.com/',
+//            'connect_timeout' => 1,
+//            'timeout'  => 3, // 60 seconds, may be overridden by individual operations
+        );
 
         $requiredOptions = array(
             'application_id',
@@ -64,7 +75,8 @@ class BlitlineClient extends Client
         );
         $client->setUserAgent('detailnet-blitline/' . self::CLIENT_VERSION, true);
 
-        $client->getEventDispatcher()->addSubscriber(new ExpectedContentTypeListener());
+        $client->getEventDispatcher()->addSubscriber(new ErrorHandlerSubscriber());
+        $client->getEventDispatcher()->addSubscriber(new ExpectedContentTypeSubscriber());
 
         return $client;
     }
@@ -105,8 +117,33 @@ class BlitlineClient extends Client
         }
     }
 
+    public function execute($command)
+    {
+        // It seems we can't intercept Guzzle's request exceptions through the event system...
+        // e.g. when http://api.blitlineee.com/ is unreachable or the request times out.
+        try {
+            return parent::execute($command);
+        } catch (GuzzleHttpException\RequestException $e) {
+            // We want to throw our own exceptions so that consumers of the library know which
+            // exceptions to handle.
+            $this->dispatch(
+                'request.exception',
+                array(
+                    'command'   => $command,
+                    'request'   => $command->getRequest(),
+                    'exception' => $e,
+                )
+            );
+
+            // Should not be needed as our error handler will throw an exception...
+            return array();
+        }
+    }
+
     /**
-     * @inheritdoc
+     * @param string $method
+     * @param array $args
+     * @return mixed
      */
     public function __call($method, $args)
     {
