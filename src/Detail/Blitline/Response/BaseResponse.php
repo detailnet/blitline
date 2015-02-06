@@ -20,7 +20,7 @@ abstract class BaseResponse implements
 
     /**
      * @param OperationCommand $command
-     * @return ResponseInterface
+     * @return BaseResponse
      */
     public static function fromCommand(OperationCommand $command)
     {
@@ -36,11 +36,34 @@ abstract class BaseResponse implements
             throw new Exception\ServerException($e->getMessage(), 0, $e);
         }
 
+        return static::fromResponse($responseData);
+    }
+
+    /**
+     * @param array $responseData
+     * @return BaseResponse
+     */
+    public static function fromResponse(array $responseData)
+    {
         if (!isset($responseData['results']) || !is_array($responseData['results'])) {
             throw new Exception\ServerException('Unexpected response format; contains no result');
         }
 
-        return new static($responseData['results']);
+        $result = $responseData['results'];
+        $error = null;
+
+        if (isset($result['errors']) && is_array($result['errors'])) {
+            $error = current($result['errors']);
+        } elseif (isset($result['error'])) {
+            $error = $result['error'];
+        }
+
+        if ($error !== null) {
+            // We don't know if it's a client or server exception... (most likely a client exception, though)
+            throw new Exception\BadResponseException((string) $error);
+        }
+
+        return new static($result);
     }
 
     /**

@@ -24,7 +24,7 @@ use Detail\Blitline\Response;
  */
 class BlitlineClient extends Client
 {
-    const CLIENT_VERSION = '0.4.0';
+    const CLIENT_VERSION = '0.4.1';
 
     /**
      * @var JobBuilderInterface

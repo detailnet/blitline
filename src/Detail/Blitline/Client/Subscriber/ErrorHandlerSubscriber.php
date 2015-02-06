@@ -115,6 +115,6 @@ class ErrorHandlerSubscriber implements
             // Do nothing
         }
 
-        return $error;
+        return (string) $error;
     }
 }
