@@ -133,4 +133,34 @@ abstract class BaseResponse implements
     {
         return $this->getResult('job_id');
     }
+
+    /**
+     * @param $key
+     * @return array
+     */
+    protected function getArrayResult($key)
+    {
+        try {
+            $values = $this->getResult($key);
+        } catch (Exception\ResponseException $e) {
+            return array();
+        }
+
+        // Blitline seems to return null sometimes... (e.g. for original_meta)
+        if ($values === null) {
+            $values = array();
+        }
+
+        if (!is_array($values)) {
+            throw new Exception\RuntimeException(
+                sprintf(
+                    'Invalid value for "%s"; expected array but got %s',
+                    $key,
+                    is_object($values) ? get_class($values) : gettype($values)
+                )
+            );
+        }
+
+        return $values;
+    }
 }
