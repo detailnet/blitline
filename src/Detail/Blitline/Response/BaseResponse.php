@@ -1,9 +1,9 @@
 <?php
 
-namespace  Detail\Blitline\Response;
+namespace Detail\Blitline\Response;
 
-use Detail\Blitline\Client\Exception;
-use Detail\Blitline\Exception\RuntimeException;
+use Detail\Blitline\Client\Exception as ClientException;
+use Detail\Blitline\Exception;
 
 use Guzzle\Common\Exception\RuntimeException as GuzzleRuntimeException;
 use Guzzle\Service\Command\OperationCommand;
@@ -33,37 +33,32 @@ abstract class BaseResponse implements
         try {
             $responseData = $response->json();
         } catch (GuzzleRuntimeException $e) {
-            throw new Exception\ServerException($e->getMessage(), 0, $e);
+            throw new ClientException\ServerException($e->getMessage(), 0, $e);
         }
 
-        return static::fromResponse($responseData);
+        return static::fromRawResponse($responseData);
     }
 
     /**
      * @param array $responseData
      * @return BaseResponse
      */
-    public static function fromResponse(array $responseData)
+    public static function fromRawResponse(array $responseData)
     {
         if (!isset($responseData['results']) || !is_array($responseData['results'])) {
-            throw new Exception\ServerException('Unexpected response format; contains no result');
+            throw new ClientException\ServerException('Unexpected response format; contains no result');
         }
 
-        $result = $responseData['results'];
-        $error = null;
+        return new static($responseData['results']);
+    }
 
-        if (isset($result['errors']) && is_array($result['errors'])) {
-            $error = current($result['errors']);
-        } elseif (isset($result['error'])) {
-            $error = $result['error'];
-        }
-
-        if ($error !== null) {
-            // We don't know if it's a client or server exception... (most likely a client exception, though)
-            throw new Exception\BadResponseException((string) $error);
-        }
-
-        return new static($result);
+    /**
+     * @param ResponseInterface $response
+     * @return array
+     */
+    public static function toRawResponse(ResponseInterface $response)
+    {
+        return array('results' => $response->getResult());
     }
 
     /**
@@ -72,6 +67,14 @@ abstract class BaseResponse implements
     public function __construct(array $result)
     {
         $this->result = $result;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return self::toRawResponse($this);
     }
 
     /**
@@ -84,13 +87,43 @@ abstract class BaseResponse implements
 
         if ($key !== null) {
             if (!isset($result[$key])) {
-                throw new RuntimeException(sprintf('Result does not contain "%s"', $key));
+                throw new Exception\ResponseException(sprintf('Result does not contain "%s"', $key));
             }
 
             $result = $result[$key];
         }
 
         return $result;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getError()
+    {
+        try {
+            $error = $this->getResult('errors');
+
+            if (is_array($error)) {
+                $error = current($error);
+            }
+
+            return $error;
+        } catch (Exception\ResponseException $e) {
+            try {
+                return $this->getResult('error');
+            } catch (Exception\ResponseException $e) {
+                return null;
+            }
+        }
+    }
+
+    /**
+     * @return boolean
+     */
+    public function hasError()
+    {
+        return $this->getError() !== null;
     }
 
     /**

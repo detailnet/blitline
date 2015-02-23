@@ -28,6 +28,26 @@ class JobProcessedTest extends ResponseTestCase
         $this->assertEquals($images, $response->getImages());
     }
 
+    public function testFailedImageIdentifiersCanBeGet()
+    {
+        $response = $this->getJobProcessedResponse(array('failed_image_identifiers' => array()));
+        $this->assertFalse($response->hasFailedImageIdentifiers());
+
+        $imageIdentifiers = array("200", "400");
+
+        $response = $this->getJobProcessedResponse(
+            array('failed_image_identifiers' => $imageIdentifiers)
+        );
+
+        $this->assertTrue($response->hasFailedImageIdentifiers());
+        $this->assertEquals($imageIdentifiers, $response->getFailedImageIdentifiers());
+
+        $this->setExpectedException('Detail\Blitline\Exception\RuntimeException');
+        $response = $this->getJobProcessedResponse(array('failed_image_identifiers' => 'invalid'));
+        $response->getFailedImageIdentifiers();
+
+    }
+
     public function testOriginalMetaCanBeGet()
     {
         $meta = array(array('key' => 'value'));
