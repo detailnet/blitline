@@ -5,6 +5,7 @@ namespace Detail\Blitline\Client;
 use Guzzle\Common\Collection;
 use Guzzle\Http\Exception as GuzzleHttpException;
 use Guzzle\Service\Client;
+use Guzzle\Service\Command\CommandInterface;
 use Guzzle\Service\Description\ServiceDescription;
 
 use Detail\Blitline\Client\Subscriber\ErrorHandlerSubscriber;
@@ -147,7 +148,7 @@ class BlitlineClient extends Client
                 'request.exception',
                 array(
                     'command'   => $command,
-                    'request'   => $command->getRequest(),
+                    'request'   => $command instanceof CommandInterface ? $command->getRequest() : null,
                     'exception' => $e,
                 )
             );
