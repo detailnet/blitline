@@ -3,7 +3,7 @@
     "description": "Blitline API client",
     "type": "library",
     "keywords": [
-        "Blitline",
+        "blitline",
         "image",
         "processing",
         "conversion"
@@ -18,8 +18,8 @@
     ],
     "require": {
         "php": ">=5.5.0",
-        "psr/log": "~1.0",
         "guzzlehttp/guzzle": "^5.0.3",
+        "guzzlehttp/guzzle-services": "^0.5.0",
         "zendframework/zend-stdlib": "2.*"
     },
     "require-dev": {

@@ -2,16 +2,14 @@
 
 namespace Detail\Blitline\Client;
 
-use Guzzle\Common\Collection;
-use Guzzle\Http\Exception as GuzzleHttpException;
-use Guzzle\Service\Client;
-use Guzzle\Service\Command\CommandInterface;
-use Guzzle\Service\Description\ServiceDescription;
+use GuzzleHttp\Client as HttpClient;
+use GuzzleHttp\ClientInterface as HttpClientInterface;
+use GuzzleHttp\Command\Guzzle\Description as ServiceDescription;
+use GuzzleHttp\Command\Guzzle\DescriptionInterface as ServiceDescriptionInterface;
+use GuzzleHttp\Command\Guzzle\GuzzleClient as ServiceClient;
 
-use Detail\Blitline\Client\Subscriber\ErrorHandlerSubscriber;
-use Detail\Blitline\Client\Subscriber\ExpectedContentTypeSubscriber;
-use Detail\Blitline\Client\Subscriber\RequestOptionsSubscriber;
-use Detail\Blitline\Exception\InvalidArgumentException;
+use Detail\Blitline\Client\Subscriber;
+use Detail\Blitline\Exception;
 use Detail\Blitline\Job\Definition\DefinitionInterface;
 use Detail\Blitline\Job\JobBuilder;
 use Detail\Blitline\Job\JobBuilderInterface;
@@ -23,9 +21,9 @@ use Detail\Blitline\Response;
  * @method Response\JobProcessed pollJob(array $params = array())
  * @method Response\JobSubmitted submitJob(mixed $job = array())
  */
-class BlitlineClient extends Client
+class BlitlineClient extends ServiceClient
 {
-    const CLIENT_VERSION = '0.4.2';
+    const CLIENT_VERSION = '0.5.1';
 
     /**
      * @var JobBuilderInterface
@@ -39,9 +37,21 @@ class BlitlineClient extends Client
      */
     public static function factory($options = array(), JobBuilderInterface $jobBuilder = null)
     {
+        $requiredOptions = array(
+            'application_id',
+        );
+
+        foreach ($requiredOptions as $optionName) {
+            if (!isset($options[$optionName]) || $options[$optionName] === '') {
+                throw new Exception\InvalidArgumentException(
+                    sprintf('Missing required configuration option "%s"', $optionName)
+                );
+            }
+        }
+
         $defaultOptions = array(
             'base_url' => 'https://api.blitline.com/',
-            'request.options' => array(
+            'defaults' => array(
                 // Float describing the number of seconds to wait while trying to connect to a server.
                 // 0 was the default (wait indefinitely).
                 'connect_timeout' => 10,
@@ -51,42 +61,32 @@ class BlitlineClient extends Client
             ),
         );
 
-        $requiredOptions = array(
-            'application_id',
+        // These are always applied
+        $overrideOptions = array(
+            'defaults' => array(
+                // We're using our own error handler
+                // (this disables the use of the internal HttpError subscriber)
+                'exceptions' => false,
+                'headers' => array(
+                    'Accept' => 'application/json',
+                    'User-Agent' => 'detailnet-blitline/' . self::CLIENT_VERSION,
+                ),
+                'query' => array(
+                    'application_id' => $options['application_id'],
+                )
+            ),
         );
 
-        foreach ($requiredOptions as $optionName) {
-            if (!isset($options[$optionName]) || $options[$optionName] === '') {
-                throw new InvalidArgumentException(
-                    sprintf('Missing required configuration option "%s"', $optionName)
-                );
-            }
-        }
+        // Apply options
+        $config = array_replace_recursive($defaultOptions, $options, $overrideOptions);
 
-        $config = Collection::fromConfig($options, $defaultOptions);
+        $httpClient = new HttpClient($config);
+        $httpClient->getEmitter()->attach(new Subscriber\ErrorHandler());
+//        $httpClient->getEmitter()->attach(new Subscriber\ExpectedContentTypeSubscriber());
+//        $httpClient->getEmitter()->attach(new Subscriber\RequestOptionsSubscriber());
 
-        $client = new self($config->get('base_url'), $config, $jobBuilder);
-        $client->setDefaultOption(
-            'query',
-            array(
-                'application_id' => $config['application_id'],
-            )
-        );
-        $client->setDefaultOption(
-            'headers',
-            array(
-                'Accept' => 'application/json',
-            )
-        );
-
-        $client->setDescription(
-            ServiceDescription::factory(__DIR__ . '/../ServiceDescription/Blitline.php')
-        );
-        $client->setUserAgent('detailnet-blitline/' . self::CLIENT_VERSION, true);
-
-        $client->getEventDispatcher()->addSubscriber(new ErrorHandlerSubscriber());
-        $client->getEventDispatcher()->addSubscriber(new ExpectedContentTypeSubscriber());
-        $client->getEventDispatcher()->addSubscriber(new RequestOptionsSubscriber());
+        $description = new ServiceDescription(require __DIR__ . '/../ServiceDescription/Blitline.php');
+        $client = new static($httpClient, $description, $jobBuilder);
 
         return $client;
     }
@@ -113,57 +113,70 @@ class BlitlineClient extends Client
         return $this;
     }
 
-    /**
-     * @return \Guzzle\Http\Message\RequestFactoryInterface
-     */
-    public function getRequestFactory()
-    {
-        return $this->requestFactory;
-    }
+//    /**
+//     * @return \Guzzle\Http\Message\RequestFactoryInterface
+//     */
+//    public function getRequestFactory()
+//    {
+//        return $this->requestFactory;
+//    }
 
     /**
-     * @param string $baseUrl
-     * @param array|Collection $config
+     * @param HttpClientInterface $client
+     * @param ServiceDescriptionInterface $description
      * @param JobBuilderInterface $jobBuilder
      */
-    public function __construct($baseUrl = '', $config = null, JobBuilderInterface $jobBuilder = null)
-    {
-        parent::__construct($baseUrl, $config);
+    public function __construct(
+        HttpClientInterface $client,
+        ServiceDescriptionInterface $description,
+        JobBuilderInterface $jobBuilder = null
+    ) {
+        $config = array(
+//            'process' => false, // Don't use Guzzle Service's processing (we're rolling our own...)
+        );
+
+        parent::__construct($client, $description, $config);
 
         if ($jobBuilder !== null) {
             $this->setJobBuilder($jobBuilder);
         }
+
+//        $emitter = $this->getEmitter();
+//        $emitter->attach(
+//            new Subscriber\ProcessResponse($description)
+//        );
+
     }
 
-    public function execute($command)
-    {
-        // It seems we can't intercept Guzzle's request exceptions through the event system...
-        // e.g. when http://api.blitlineee.com/ is unreachable or the request times out.
-        try {
-            return parent::execute($command);
-        } catch (GuzzleHttpException\RequestException $e) {
-            // We want to throw our own exceptions so that consumers of the library know which
-            // exceptions to handle.
-            $this->dispatch(
-                'request.exception',
-                array(
-                    'command'   => $command,
-                    'request'   => $command instanceof CommandInterface ? $command->getRequest() : null,
-                    'exception' => $e,
-                )
-            );
-
-            // Should not be needed as our error handler will throw an exception...
-            return array();
-        }
-    }
+//    public function execute($command)
+//    {
+//        // It seems we can't intercept Guzzle's request exceptions through the event system...
+//        // e.g. when http://api.blitlineee.com/ is unreachable or the request times out.
+//        try {
+//            return parent::execute($command);
+//        } catch (GuzzleHttpException\RequestException $e) {
+//            // We want to throw our own exceptions so that consumers of the library know which
+//            // exceptions to handle.
+//            $this->dispatch(
+//                'request.exception',
+//                array(
+//                    'command'   => $command,
+//                    'request'   => $command instanceof CommandInterface ? $command->getRequest() : null,
+//                    'exception' => $e,
+//                )
+//            );
+//
+//            // Should not be needed as our error handler will throw an exception...
+//            return array();
+//        }
+//    }
 
     /**
      * @param string $method
      * @param array $args
      * @return mixed
      */
-    public function __call($method, $args)
+    public function __call($method, array $args)
     {
         if (isset($args[0]) && $args[0] instanceof DefinitionInterface) {
             /** @var DefinitionInterface $definition */
