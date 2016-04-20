@@ -85,7 +85,6 @@ class BlitlineClient extends ServiceClient
         $httpClient = new HttpClient($config);
         $httpClient->getEmitter()->attach(new Subscriber\ErrorHandler());
 //        $httpClient->getEmitter()->attach(new Subscriber\ExpectedContentTypeSubscriber());
-//        $httpClient->getEmitter()->attach(new Subscriber\RequestOptionsSubscriber());
 
         $description = new ServiceDescription(require __DIR__ . '/../ServiceDescription/Blitline.php');
         $client = new static($httpClient, $description, $jobBuilder);
@@ -113,11 +112,11 @@ class BlitlineClient extends ServiceClient
             $this->setJobBuilder($jobBuilder);
         }
 
-//        $emitter = $this->getEmitter();
+        $emitter = $this->getEmitter();
 //        $emitter->attach(
 //            new Subscriber\ProcessResponse($description)
 //        );
-
+        $emitter->attach(new Subscriber\RequestOptions($description));
     }
 
     /**
@@ -141,14 +140,6 @@ class BlitlineClient extends ServiceClient
         $this->jobBuilder = $jobBuilder;
         return $this;
     }
-
-//    /**
-//     * @return \Guzzle\Http\Message\RequestFactoryInterface
-//     */
-//    public function getRequestFactory()
-//    {
-//        return $this->requestFactory;
-//    }
 
     /**
      * @param CommandInterface $command
