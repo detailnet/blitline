@@ -4,6 +4,8 @@ namespace Detail\Blitline\Client;
 
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\ClientInterface as HttpClientInterface;
+use GuzzleHttp\Command\CommandInterface;
+use GuzzleHttp\Command\Exception\CommandException;
 use GuzzleHttp\Command\Guzzle\Description as ServiceDescription;
 use GuzzleHttp\Command\Guzzle\DescriptionInterface as ServiceDescriptionInterface;
 use GuzzleHttp\Command\Guzzle\GuzzleClient as ServiceClient;
@@ -57,7 +59,7 @@ class BlitlineClient extends ServiceClient
                 'connect_timeout' => 10,
                 // Float describing the timeout of the request in seconds.
                 // 0 was the default (wait indefinitely).
-                'timeout' => 60, // 60 seconds, may be overridden by individual operations
+                'timeout' => 5, // 60 seconds, may be overridden by individual operations
             ),
         );
 
@@ -92,6 +94,33 @@ class BlitlineClient extends ServiceClient
     }
 
     /**
+     * @param HttpClientInterface $client
+     * @param ServiceDescriptionInterface $description
+     * @param JobBuilderInterface $jobBuilder
+     */
+    public function __construct(
+        HttpClientInterface $client,
+        ServiceDescriptionInterface $description,
+        JobBuilderInterface $jobBuilder = null
+    ) {
+        $config = array(
+//            'process' => false, // Don't use Guzzle Service's processing (we're rolling our own...)
+        );
+
+        parent::__construct($client, $description, $config);
+
+        if ($jobBuilder !== null) {
+            $this->setJobBuilder($jobBuilder);
+        }
+
+//        $emitter = $this->getEmitter();
+//        $emitter->attach(
+//            new Subscriber\ProcessResponse($description)
+//        );
+
+    }
+
+    /**
      * @return JobBuilderInterface
      */
     public function getJobBuilder()
@@ -122,54 +151,23 @@ class BlitlineClient extends ServiceClient
 //    }
 
     /**
-     * @param HttpClientInterface $client
-     * @param ServiceDescriptionInterface $description
-     * @param JobBuilderInterface $jobBuilder
+     * @param CommandInterface $command
+     * @return \GuzzleHttp\Ring\Future\FutureInterface|mixed|null
      */
-    public function __construct(
-        HttpClientInterface $client,
-        ServiceDescriptionInterface $description,
-        JobBuilderInterface $jobBuilder = null
-    ) {
-        $config = array(
-//            'process' => false, // Don't use Guzzle Service's processing (we're rolling our own...)
-        );
-
-        parent::__construct($client, $description, $config);
-
-        if ($jobBuilder !== null) {
-            $this->setJobBuilder($jobBuilder);
+    public function execute(CommandInterface $command)
+    {
+        // It seems we can't intercept Guzzle's request exceptions through the event system...
+        // e.g. when http://api.blitline.com/ is unreachable or the request times out.
+        try {
+            return parent::execute($command);
+        } catch (CommandException $e) {
+            throw new Exception\RuntimeException(
+                sprintf('Request failed: %s', $e->getMessage()),
+                0,
+                $e
+            );
         }
-
-//        $emitter = $this->getEmitter();
-//        $emitter->attach(
-//            new Subscriber\ProcessResponse($description)
-//        );
-
     }
-
-//    public function execute($command)
-//    {
-//        // It seems we can't intercept Guzzle's request exceptions through the event system...
-//        // e.g. when http://api.blitlineee.com/ is unreachable or the request times out.
-//        try {
-//            return parent::execute($command);
-//        } catch (GuzzleHttpException\RequestException $e) {
-//            // We want to throw our own exceptions so that consumers of the library know which
-//            // exceptions to handle.
-//            $this->dispatch(
-//                'request.exception',
-//                array(
-//                    'command'   => $command,
-//                    'request'   => $command instanceof CommandInterface ? $command->getRequest() : null,
-//                    'exception' => $e,
-//                )
-//            );
-//
-//            // Should not be needed as our error handler will throw an exception...
-//            return array();
-//        }
-//    }
 
     /**
      * @param string $method

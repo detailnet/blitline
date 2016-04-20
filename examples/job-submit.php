@@ -4,13 +4,13 @@ use Detail\Blitline\Client\BlitlineClient;
 
 $config = require 'bootstrap.php';
 
-$imageUrl = isset($_GET['imageUrl']) ? $_GET['imageUrl'] : null;
+$imageUrl = isset($_GET['image_url']) ? $_GET['image_url'] : null;
 
 if (!$imageUrl) {
-    throw new RuntimeException('Missing or invalid parameter "imageUrl"');
+    throw new RuntimeException('Missing or invalid parameter "image_url"');
 }
 
-$imageSize = isset($_GET['imageSize']) ? $_GET['imageSize'] : 200;
+$imageSize = isset($_GET['image_size']) ? $_GET['image_size'] : 200;
 $image = new SplFileInfo($imageUrl);
 $imageName = $image->getBasename();
 
@@ -55,8 +55,7 @@ $job = $jobBuilder->createJob()
 //                        'bucket' => $getConfig('s3bucket'),
                         'key' => $getConfig('s3path') . '/' . $imageName . '-' . $imageSize . '_blitline.jpg',
                     ),
-                ),
-                true // Merge with defaults
+                )
             )
     );
 
