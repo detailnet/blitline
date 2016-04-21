@@ -7,7 +7,6 @@ use GuzzleHttp\Message\ResponseInterface as HttpResponseInterface;
 
 use JmesPath\Env as JmesPath;
 
-use Detail\Blitline\Client\Exception as ClientException;
 use Detail\Blitline\Exception;
 
 abstract class BaseResponse implements

@@ -6,8 +6,6 @@ use ArrayObject;
 use RecursiveIteratorIterator;
 use RecursiveArrayIterator;
 
-use Zend\Stdlib\ArrayUtils;
-
 abstract class BaseDefinition
 {
     protected $options = array();

@@ -74,7 +74,7 @@ class ProcessResponse implements
 
         /** @var ResponseInterface $responseClass */
 
-        $result = $responseClass::fromOperation($operation, $event);
+        $result = $responseClass::fromHttpResponse($event->getResponse());
 
         $event->setResult($result);
     }
