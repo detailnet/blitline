@@ -85,7 +85,7 @@ class BlitlineClient extends ServiceClient
         $httpClient = new HttpClient($config);
         $httpClient->getEmitter()->attach(new Subscriber\ErrorHandler());
 
-        $description = new ServiceDescription(require __DIR__ . '/../ServiceDescription/Blitline.php');
+        $description = new ServiceDescription(require __DIR__ . '/ServiceDescription/Blitline.php');
         $client = new static($httpClient, $description, $jobBuilder);
 
         return $client;
