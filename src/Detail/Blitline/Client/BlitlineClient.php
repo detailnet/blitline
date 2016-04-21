@@ -59,7 +59,7 @@ class BlitlineClient extends ServiceClient
                 'connect_timeout' => 10,
                 // Float describing the timeout of the request in seconds.
                 // 0 was the default (wait indefinitely).
-                'timeout' => 5, // 60 seconds, may be overridden by individual operations
+                'timeout' => 60, // 60 seconds, may be overridden by individual operations
             ),
         );
 
@@ -84,7 +84,6 @@ class BlitlineClient extends ServiceClient
 
         $httpClient = new HttpClient($config);
         $httpClient->getEmitter()->attach(new Subscriber\ErrorHandler());
-//        $httpClient->getEmitter()->attach(new Subscriber\ExpectedContentTypeSubscriber());
 
         $description = new ServiceDescription(require __DIR__ . '/../ServiceDescription/Blitline.php');
         $client = new static($httpClient, $description, $jobBuilder);
@@ -103,7 +102,7 @@ class BlitlineClient extends ServiceClient
         JobBuilderInterface $jobBuilder = null
     ) {
         $config = array(
-//            'process' => false, // Don't use Guzzle Service's processing (we're rolling our own...)
+            'process' => false, // Don't use Guzzle Service's processing (we're rolling our own...)
         );
 
         parent::__construct($client, $description, $config);
@@ -113,10 +112,24 @@ class BlitlineClient extends ServiceClient
         }
 
         $emitter = $this->getEmitter();
-//        $emitter->attach(
-//            new Subscriber\ProcessResponse($description)
-//        );
+        $emitter->attach(new Subscriber\ProcessResponse($description));
         $emitter->attach(new Subscriber\RequestOptions($description));
+    }
+
+    /**
+     * @return string
+     */
+    public function getBlitlineApplicationId()
+    {
+        return $this->getHttpClient()->getDefaultOption('query')['application_id'];
+    }
+
+    /**
+     * @return string
+     */
+    public function getBlitlineUrl()
+    {
+        return $this->getHttpClient()->getBaseUrl();
     }
 
     /**

@@ -4,14 +4,14 @@ namespace Detail\Blitline\Response;
 
 use Detail\Blitline\Exception;
 
-class JobProcessed extends BaseResponse
+class JobProcessed extends JobResponse
 {
     /**
      * @return array
      */
     public function getImages()
     {
-        return $this->getResult('images');
+        return array_values($this->getArrayResult('images'));
     }
 
     /**
@@ -19,7 +19,7 @@ class JobProcessed extends BaseResponse
      */
     public function getFailedImageIdentifiers()
     {
-        return $this->getArrayResult('failed_image_identifiers');
+        return array_values($this->getArrayResult('failed_image_identifiers'));
     }
 
     /**

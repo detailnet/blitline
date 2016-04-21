@@ -2,38 +2,36 @@
 
 namespace Detail\Blitline\Response;
 
+use GuzzleHttp\Message\ResponseInterface as HttpResponseInterface;
+
 interface ResponseInterface
 {
     /**
-     * @param array $responseData
-     * @return BaseResponse
+     * @param HttpResponseInterface $response
+     * @return ResponseInterface
      */
-    public static function fromRawResponse(array $responseData);
+    public static function fromHttpResponse(HttpResponseInterface $response);
 
     /**
-     * @param ResponseInterface $response
+     * @param array $data
+     * @return ResponseInterface
+     */
+    public static function fromData(array $data);
+
+    /**
+     * @return HttpResponseInterface
+     */
+    public function getHttpResponse();
+
+    /**
      * @return array
      */
-    public static function toRawResponse(ResponseInterface $response);
+    public function getData();
 
     /**
-     * @param string $key
-     * @return array|mixed
+     * @param string $expression
+     * @param boolean $failOnNull
+     * @return mixed|null
      */
-    public function getResult($key = null);
-
-    /**
-     * @return string|null
-     */
-    public function getError();
-
-    /**
-     * @return boolean
-     */
-    public function hasError();
-
-    /**
-     * @return string
-     */
-    public function getJobId();
+    public function getResult($expression, $failOnNull = false);
 }

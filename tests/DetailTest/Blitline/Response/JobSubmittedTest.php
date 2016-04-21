@@ -2,40 +2,18 @@
 
 namespace DetailTest\Blitline\Response;
 
+use Detail\Blitline\Exception;
 use Detail\Blitline\Response\JobSubmitted;
 
 class JobSubmittedTest extends ResponseTestCase
 {
-    public function testRawResponseHandling()
+    public function testResponseCanBeCreatedFromHttpResponse()
     {
-        $rawResponse = array('results' => array('job_id' => 1));
-        $response = JobSubmitted::fromRawResponse($rawResponse);
+        $response = JobSubmitted::fromHttpResponse($this->getHttpResponseForResult());
+        $this->assertInstanceOf(JobSubmitted::CLASS, $response);
 
-        $this->assertEquals($rawResponse, JobSubmitted::toRawResponse($response));
-        $this->assertEquals($rawResponse, $response->toArray());
-
-        $this->setExpectedException('Detail\Blitline\Client\Exception\ServerException');
-        JobSubmitted::fromRawResponse(array());
-    }
-
-    public function testResponseCanBeCreatedFromGuzzleCommand()
-    {
-        $response = JobSubmitted::fromCommand(
-            $this->getCommand(array('results' => array()))
-        );
-
-        $this->assertInstanceOf('Detail\Blitline\Response\JobSubmitted', $response);
-
-        $this->setExpectedException('Detail\Blitline\Client\Exception\ServerException');
-        JobSubmitted::fromCommand($this->getCommand(array()));
-    }
-
-    /**
-     * @param array $data
-     * @return JobSubmitted
-     */
-    protected function getJobSubmittedResponse(array $data)
-    {
-        return $this->getResponse('Detail\Blitline\Response\JobSubmitted', $data);
+        $this->setExpectedException(Exception\RuntimeException::CLASS);
+        $response = JobSubmitted::fromHttpResponse($this->getHttpResponse());
+        $response->getResult();
     }
 }
