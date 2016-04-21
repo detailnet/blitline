@@ -16,4 +16,33 @@ class JobSubmittedTest extends ResponseTestCase
         $response = JobSubmitted::fromHttpResponse($this->getHttpResponse());
         $response->getResult();
     }
+
+    public function testResponseCanBeCreatedFromData()
+    {
+        $key = 'key';
+        $value = 'value';
+
+        $response = JobSubmitted::fromData(array('results' => array($key => $value)));
+        $this->assertInstanceOf(JobSubmitted::CLASS, $response);
+        $this->assertEquals($value, $response->getResult($key));
+    }
+
+    public function testImagesCanBeGet()
+    {
+        $images = array(array('image_identifier' => 'some-image-identifier'));
+        $result = array('images' => $images);
+
+        $response = $this->getJobSubmittedResponse($result);
+
+        $this->assertEquals($images, $response->getImages());
+    }
+
+    /**
+     * @param array $data
+     * @return JobSubmitted
+     */
+    protected function getJobSubmittedResponse(array $data)
+    {
+        return $this->getResponse(JobSubmitted::CLASS, $data);
+    }
 }

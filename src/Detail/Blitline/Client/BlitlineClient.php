@@ -4,7 +4,6 @@ namespace Detail\Blitline\Client;
 
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\ClientInterface as HttpClientInterface;
-use GuzzleHttp\Command\CommandInterface;
 use GuzzleHttp\Command\Exception\CommandException;
 use GuzzleHttp\Command\Guzzle\Description as ServiceDescription;
 use GuzzleHttp\Command\Guzzle\DescriptionInterface as ServiceDescriptionInterface;
@@ -155,25 +154,6 @@ class BlitlineClient extends ServiceClient
     }
 
     /**
-     * @param CommandInterface $command
-     * @return \GuzzleHttp\Ring\Future\FutureInterface|mixed|null
-     */
-    public function execute(CommandInterface $command)
-    {
-        // It seems we can't intercept Guzzle's request exceptions through the event system...
-        // e.g. when http://api.blitline.com/ is unreachable or the request times out.
-        try {
-            return parent::execute($command);
-        } catch (CommandException $e) {
-            throw new Exception\RuntimeException(
-                sprintf('Request failed: %s', $e->getMessage()),
-                0,
-                $e
-            );
-        }
-    }
-
-    /**
      * @param string $method
      * @param array $args
      * @return mixed
@@ -186,6 +166,16 @@ class BlitlineClient extends ServiceClient
             $args[0] = $definition->toArray();
         }
 
-        return parent::__call($method, $args);
+        // It seems we can't intercept Guzzle's request exceptions through the event system...
+        // e.g. when http://api.blitline.com/ is unreachable or the request times out.
+        try {
+            return parent::__call($method, $args);
+        } catch (CommandException $e) {
+            throw new Exception\RuntimeException(
+                sprintf('Request failed: %s', $e->getMessage()),
+                0,
+                $e
+            );
+        }
     }
 }

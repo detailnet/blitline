@@ -4,6 +4,7 @@ namespace Detail\Blitline\Response;
 
 use GuzzleHttp\Message\Response as HttpResponse;
 use GuzzleHttp\Message\ResponseInterface as HttpResponseInterface;
+use GuzzleHttp\Stream\Stream;
 
 use JmesPath\Env as JmesPath;
 
@@ -40,7 +41,7 @@ abstract class BaseResponse implements
      */
     public static function fromData(array $data)
     {
-        $response = new HttpResponse(200, json_encode($data));
+        $response = new HttpResponse(200, array(), Stream::factory(json_encode($data)));
 
         return static::fromHttpResponse($response);
     }

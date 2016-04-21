@@ -5,8 +5,10 @@ namespace DetailTest\Blitline\Client;
 use PHPUnit_Framework_TestCase as TestCase;
 
 use GuzzleHttp\Command\Command;
+use GuzzleHttp\Command\Exception\CommandException;
 
 use Detail\Blitline\Client\BlitlineClient;
+use Detail\Blitline\Exception;
 use Detail\Blitline\Job\Definition\JobDefinition;
 use Detail\Blitline\Job\JobBuilder;
 
@@ -108,6 +110,39 @@ class BlitlineClientTest extends TestCase
         $this->assertEquals($jobBuilder, $client->getJobBuilder());
     }
 
+    public function testCommandExceptionsAreHandled()
+    {
+//        $commandResponse = array('a' => 'b');
+//
+        $command = $this->getMockBuilder(Command::CLASS)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $exception = $this->getMockBuilder(CommandException::CLASS)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        /** @var CommandException $exception */
+
+        $client = $this->getMockBuilder(BlitlineClient::CLASS)
+            ->disableOriginalConstructor()
+            ->setMethods(array('getCommand', 'execute'))
+            ->getMock();
+        $client
+            ->expects($this->any())
+            ->method('getCommand')
+            ->will($this->returnValue($command));
+        $client
+            ->expects($this->any())
+            ->method('execute')
+            ->will($this->throwException($exception));
+
+        /** @var BlitlineClient $client */
+
+        $this->setExpectedException(Exception\RuntimeException::CLASS);
+        $client->__call('dummyCommand', array());
+    }
+
     public function testCommandsAcceptDefinitions()
     {
         $commandResponse = array('a' => 'b');
@@ -139,6 +174,6 @@ class BlitlineClientTest extends TestCase
             ->method('toArray')
             ->will($this->returnValue($commandArgs));
 
-        $this->assertEquals($commandResponse, $client->__call('testCommand', array($definition)));
+        $this->assertEquals($commandResponse, $client->__call('dummyCommand', array($definition)));
     }
 }

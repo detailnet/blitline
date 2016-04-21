@@ -17,6 +17,16 @@ class JobProcessedTest extends ResponseTestCase
         $response->getResult();
     }
 
+    public function testResponseCanBeCreatedFromData()
+    {
+        $key = 'key';
+        $value = 'value';
+
+        $response = JobProcessed::fromData(array('results' => array($key => $value)));
+        $this->assertInstanceOf(JobProcessed::CLASS, $response);
+        $this->assertEquals($value, $response->getResult($key));
+    }
+
     public function testImagesCanBeGet()
     {
         $images = array(array('image_identifier' => 'some-image-identifier'));
