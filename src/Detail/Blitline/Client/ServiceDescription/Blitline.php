@@ -21,8 +21,7 @@ return array(
             ),
             'responseClass' => Response\JobProcessed::CLASS,
             'data' => array(
-//                'requestOptions' => array('timeout' => 60 * 10), // Wait 10 minutes for the completion of a job
-                'requestOptions' => array('timeout' => 3), // Wait 10 minutes for the completion of a job
+                'requestOptions' => array('timeout' => 60 * 10), // Wait 10 minutes for the completion of a job
             ),
         ),
         'submitJob' => array(
