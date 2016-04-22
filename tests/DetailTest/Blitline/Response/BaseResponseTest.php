@@ -39,32 +39,6 @@ class BaseResponseTest extends ResponseTestCase
         $this->assertEquals($result, $response->getResult());
         $this->assertArrayHasKey($resultKey, $response->getResult());
         $this->assertEquals($resultValue, $response->getResult($resultKey));
-
-        $this->setExpectedException('Detail\Blitline\Exception\ResponseException');
-        $response->getResult('non-existing-key');
-    }
-
-    public function testJobIdCanBeGet()
-    {
-        $jobId = 'some-job-id';
-        $result = array('job_id' => $jobId);
-
-        $response = $this->getBaseResponse($result);
-
-        $this->assertEquals($jobId, $response->getJobId());
-    }
-
-    /**
-     * @param array $result
-     * @param string $errorMessage
-     * @dataProvider provideErrors
-     */
-    public function testErrorsAreHandled(array $result, $errorMessage)
-    {
-        $response = $this->getBaseResponse($result);
-
-        $this->assertTrue($response->hasError());
-        $this->assertEquals($errorMessage, $response->getError());
     }
 
     /**
@@ -73,6 +47,6 @@ class BaseResponseTest extends ResponseTestCase
      */
     protected function getBaseResponse(array $data)
     {
-        return $this->getResponse('Detail\Blitline\Response\BaseResponse', $data);
+        return $this->getResponse(BaseResponse::CLASS, $data);
     }
 }

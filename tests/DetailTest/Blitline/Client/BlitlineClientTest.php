@@ -4,28 +4,25 @@ namespace DetailTest\Blitline\Client;
 
 use PHPUnit_Framework_TestCase as TestCase;
 
-//use Guzzle\Service\Description\ServiceDescription;
+use GuzzleHttp\Command\Command;
+use GuzzleHttp\Command\Exception\CommandException;
 
 use Detail\Blitline\Client\BlitlineClient;
-use Detail\Blitline\Client\Subscriber\ExpectedContentTypeSubscriber;
+use Detail\Blitline\Exception;
+use Detail\Blitline\Job\Definition\JobDefinition;
 use Detail\Blitline\Job\JobBuilder;
 
 class BlitlineClientTest extends TestCase
 {
-//    /** @var BlitlineClient */
-//    protected $client;
-
+    /**
+     * @return array
+     */
     public function provideConfigValues()
     {
         return array(
             array('random_application_id'),
         );
     }
-
-//    protected function setUp()
-//    {
-//        $this->client = new BlitlineClient();
-//    }
 
     /**
      * @param $applicationId
@@ -42,27 +39,9 @@ class BlitlineClientTest extends TestCase
         $client = BlitlineClient::factory($config, $jobBuilder);
 
         $this->assertInstanceOf('Detail\Blitline\Client\BlitlineClient', $client);
-        $this->assertEquals($config['application_id'], $client->getDefaultOption('query')['application_id']);
-        $this->assertEquals('application/json', $client->getDefaultOption('headers')['Accept']);
-        $this->assertEquals('https://api.blitline.com/', $client->getConfig('base_url'));
+        $this->assertEquals($config['application_id'], $client->getBlitlineApplicationId());
+        $this->assertEquals('https://api.blitline.com/', $client->getBlitlineUrl());
         $this->assertEquals($jobBuilder, $client->getJobBuilder());
-
-        $hasExpectedContentTypeListener = false;
-
-        foreach ($client->getEventDispatcher()->getListeners() as $eventName => $listeners) {
-            foreach ($listeners as $listenerConfig) {
-                list($listener, $callback) = $listenerConfig;
-
-                if ($listener instanceof ExpectedContentTypeSubscriber) {
-                    $hasExpectedContentTypeListener = true;
-                }
-            }
-        }
-
-        $this->assertTrue(
-            $hasExpectedContentTypeListener,
-            'BlitlineClient is missing the listener of type "Detail\Blitline\Client\Subscriber\ExpectedContentTypeSubscriber"'
-        );
     }
 
     /**
@@ -94,27 +73,34 @@ class BlitlineClientTest extends TestCase
     public function testClientHasCommands($applicationId)
     {
         $config = array(
-            'application_id' => $applicationId
+            'application_id' => $applicationId,
         );
 
         $client = BlitlineClient::factory($config);
 
-        $this->assertInstanceOf('Guzzle\Service\Command\OperationCommand', $client->getCommand('pollJob'));
-        $this->assertEquals(
-            'Detail\Blitline\Response\JobProcessed',
-            $client->getCommand('pollJob')->getOperation()->getResponseClass()
-        );
+        $this->assertTrue(is_callable(array($client, 'pollJob')));
+        $this->assertTrue(is_callable(array($client, 'submitJob')));
 
-        $this->assertInstanceOf('Guzzle\Service\Command\OperationCommand', $client->getCommand('submitJob'));
-        $this->assertEquals(
-            'Detail\Blitline\Response\JobSubmitted',
-            $client->getCommand('submitJob')->getOperation()->getResponseClass()
-        );
+//        $this->assertInstanceOf('Guzzle\Service\Command\OperationCommand', $client->getCommand('pollJob'));
+//        $this->assertEquals(
+//            'Detail\Blitline\Response\JobProcessed',
+//            $client->getCommand('pollJob')->getOperation()->getResponseClass()
+//        );
+//
+//        $this->assertInstanceOf('Guzzle\Service\Command\OperationCommand', $client->getCommand('submitJob'));
+//        $this->assertEquals(
+//            'Detail\Blitline\Response\JobSubmitted',
+//            $client->getCommand('submitJob')->getOperation()->getResponseClass()
+//        );
     }
 
     public function testJobBuilderCanBeSet()
     {
-        $client = new BlitlineClient();
+        $config = array(
+            'application_id' => 'random_application_id',
+        );
+
+        $client = BlitlineClient::factory($config);
 
         $this->assertInstanceOf('Detail\Blitline\Job\JobBuilder', $client->getJobBuilder());
 
@@ -124,32 +110,70 @@ class BlitlineClientTest extends TestCase
         $this->assertEquals($jobBuilder, $client->getJobBuilder());
     }
 
-    public function testCommandsAcceptDefinitions()
+    public function testCommandExceptionsAreHandled()
     {
-        $commandResponse = array('a' => 'b');
+//        $commandResponse = array('a' => 'b');
+//
+        $command = $this->getMockBuilder(Command::CLASS)
+            ->disableOriginalConstructor()
+            ->getMock();
 
-        $command = $this->getMock('Guzzle\Service\Command\OperationCommand');
-        $command
-            ->expects($this->any())
-            ->method('getResult')
-            ->will($this->returnValue($commandResponse));
+        $exception = $this->getMockBuilder(CommandException::CLASS)
+            ->disableOriginalConstructor()
+            ->getMock();
 
-        $client = $this->getMock('Detail\Blitline\Client\BlitlineClient', array('getCommand'));
+        /** @var CommandException $exception */
+
+        $client = $this->getMockBuilder(BlitlineClient::CLASS)
+            ->disableOriginalConstructor()
+            ->setMethods(array('getCommand', 'execute'))
+            ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommand')
             ->will($this->returnValue($command));
+        $client
+            ->expects($this->any())
+            ->method('execute')
+            ->will($this->throwException($exception));
+
+        /** @var BlitlineClient $client */
+
+        $this->setExpectedException(Exception\RuntimeException::CLASS);
+        $client->__call('dummyCommand', array());
+    }
+
+    public function testCommandsAcceptDefinitions()
+    {
+        $commandResponse = array('a' => 'b');
+
+        $command = $this->getMockBuilder(Command::CLASS)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $client = $this->getMockBuilder(BlitlineClient::CLASS)
+            ->disableOriginalConstructor()
+            ->setMethods(array('getCommand', 'execute'))
+            ->getMock();
+        $client
+            ->expects($this->any())
+            ->method('getCommand')
+            ->will($this->returnValue($command));
+        $client
+            ->expects($this->any())
+            ->method('execute')
+            ->will($this->returnValue($commandResponse));
 
         /** @var BlitlineClient $client */
 
         $commandArgs = array('c' => 'd');
 
-        $definition = $this->getMock('Detail\Blitline\Job\Definition\JobDefinition');
+        $definition = $this->getMock(JobDefinition::CLASS);
         $definition
             ->expects($this->any())
             ->method('toArray')
             ->will($this->returnValue($commandArgs));
 
-        $this->assertEquals($commandResponse, $client->__call('testCommand', array($definition)));
+        $this->assertEquals($commandResponse, $client->__call('dummyCommand', array($definition)));
     }
 }

@@ -3,19 +3,20 @@
 namespace Detail\Blitline\Job;
 
 use Detail\Blitline\Exception\RuntimeException;
-use Detail\Blitline\Job\Definition\DefinitionInterface;
+use Detail\Blitline\Job\Definition;
 
-class JobBuilder implements JobBuilderInterface
+class JobBuilder implements
+    JobBuilderInterface
 {
     /**
      * @var string
      */
-    protected $jobClass;
+    protected $jobClass = Definition\JobDefinition::CLASS;
 
     /**
      * @var string
      */
-    protected $functionClass;
+    protected $functionClass = Definition\FunctionDefinition::CLASS;
 
     /**
      * @var array
@@ -80,10 +81,10 @@ class JobBuilder implements JobBuilderInterface
     }
 
     /**
-     * @param DefinitionInterface $definition
+     * @param Definition\DefinitionInterface $definition
      * @return array
      */
-    public function getDefaultOptions(DefinitionInterface $definition = null)
+    public function getDefaultOptions(Definition\DefinitionInterface $definition = null)
     {
         $options = $this->defaultOptions;
 
@@ -91,8 +92,8 @@ class JobBuilder implements JobBuilderInterface
             return $options;
         }
 
-        $jobInterface      = $this->getDefinitonFqcn('JobDefinitionInterface');
-        $functionInterface = $this->getDefinitonFqcn('FunctionDefinitionInterface');
+        $jobInterface = Definition\JobDefinitionInterface::CLASS;
+        $functionInterface = Definition\FunctionDefinitionInterface::CLASS;
 
         $prefix = null;
         $prefixSeparator = '.';
@@ -135,39 +136,32 @@ class JobBuilder implements JobBuilderInterface
         return $this;
     }
 
-    public function __construct()
-    {
-        // Set default definition classes
-        $this->setJobClass($this->getDefinitonFqcn('JobDefinition'));
-        $this->setFunctionClass($this->getDefinitonFqcn('FunctionDefinition'));
-    }
-
     /**
-     * @inheritdoc
+     * @return Definition\JobDefinitionInterface
      */
     public function createJob()
     {
         return $this->createDefinition(
             $this->getJobClass(),
-            $this->getDefinitonFqcn('JobDefinitionInterface')
+            Definition\JobDefinitionInterface::CLASS
         );
     }
 
     /**
-     * @inheritdoc
+     * @return Definition\FunctionDefinitionInterface
      */
     public function createFunction()
     {
         return $this->createDefinition(
             $this->getFunctionClass(),
-            $this->getDefinitonFqcn('FunctionDefinitionInterface')
+            Definition\FunctionDefinitionInterface::CLASS
         );
     }
 
     /**
      * @param string $class
      * @param string $interface
-     * @return DefinitionInterface
+     * @return Definition\DefinitionInterface
      */
     protected function createDefinition($class, $interface)
     {
@@ -175,7 +169,7 @@ class JobBuilder implements JobBuilderInterface
             throw new RuntimeException(sprintf('Class "%s" does not exist', $class));
         }
 
-        /** @var DefinitionInterface $definition */
+        /** @var Definition\DefinitionInterface $definition */
         $definition = new $class();
 
         if (!$definition instanceof $interface) {
@@ -187,14 +181,5 @@ class JobBuilder implements JobBuilderInterface
         $definition->applyOptions($this->getDefaultOptions($definition));
 
         return $definition;
-    }
-
-    /**
-     * @param string $class
-     * @return string
-     */
-    protected function getDefinitonFqcn($class)
-    {
-        return __NAMESPACE__ . '\\Definition\\' . $class;
     }
 }

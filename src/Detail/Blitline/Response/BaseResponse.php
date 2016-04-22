@@ -2,160 +2,187 @@
 
 namespace Detail\Blitline\Response;
 
-use Detail\Blitline\Client\Exception as ClientException;
-use Detail\Blitline\Exception;
+use GuzzleHttp\Message\Response as HttpResponse;
+use GuzzleHttp\Message\ResponseInterface as HttpResponseInterface;
+use GuzzleHttp\Stream\Stream;
 
-use Guzzle\Common\Exception\RuntimeException as GuzzleRuntimeException;
-use Guzzle\Service\Command\OperationCommand;
-use Guzzle\Service\Command\ResponseClassInterface as GuzzleResponseInterface;
+use JmesPath\Env as JmesPath;
+
+use Detail\Blitline\Exception;
 
 abstract class BaseResponse implements
     ResponseInterface,
-    GuzzleResponseInterface
+    \ArrayAccess
 {
+    const ROOT = 'results';
+
+    /**
+     * @var HttpResponseInterface
+     */
+    protected $httpResponse;
+
     /**
      * @var array
      */
-    protected $result = array();
+    protected $data;
 
     /**
-     * @param OperationCommand $command
-     * @return BaseResponse
+     * @param HttpResponseInterface $response
+     * @return static
      */
-    public static function fromCommand(OperationCommand $command)
+    public static function fromHttpResponse(HttpResponseInterface $response)
     {
-        // Note that we should only get successful responses.
-        // For 4xx and 5xx errors an exception was thrown by our error handler.
-        // The only cases left to handle here are invalid JSON and an unexpected response format.
-
-        $response = $command->getResponse();
-
-        try {
-            $responseData = $response->json();
-        } catch (GuzzleRuntimeException $e) {
-            throw new ClientException\ServerException($e->getMessage(), 0, $e);
-        }
-
-        return static::fromRawResponse($responseData);
+        return new static($response);
     }
 
     /**
-     * @param array $responseData
-     * @return BaseResponse
+     * @param array $data
+     * @return static
      */
-    public static function fromRawResponse(array $responseData)
+    public static function fromData(array $data)
     {
-        if (!isset($responseData['results']) || !is_array($responseData['results'])) {
-            throw new ClientException\ServerException('Unexpected response format; contains no result');
-        }
+        $response = new HttpResponse(200, array(), Stream::factory(json_encode($data)));
 
-        return new static($responseData['results']);
+        return static::fromHttpResponse($response);
     }
 
     /**
-     * @param ResponseInterface $response
-     * @return array
+     * @param HttpResponseInterface $response
      */
-    public static function toRawResponse(ResponseInterface $response)
+    public function __construct(HttpResponseInterface $response)
     {
-        return array('results' => $response->getResult());
+        $this->httpResponse = $response;
     }
 
     /**
-     * @param array $result
+     * @return HttpResponseInterface
      */
-    public function __construct(array $result)
+    public function getHttpResponse()
     {
-        $this->result = $result;
+        return $this->httpResponse;
     }
 
     /**
      * @return array
      */
-    public function toArray()
+    public function getData()
     {
-        return self::toRawResponse($this);
+        if ($this->data === null) {
+            $this->data = $this->getHttpResponse()->json() ?: array();
+        }
+
+        return $this->data;
     }
 
     /**
-     * @param string $key
+     * @param string $expression
+     * @param boolean $failOnNull
      * @return array|mixed
      */
-    public function getResult($key = null)
+    public function getResult($expression = null, $failOnNull = false)
     {
-        $result = $this->result;
+        $result = $this->getResults();
 
-        if ($key !== null) {
-            if (!isset($result[$key])) {
-                throw new Exception\ResponseException(sprintf('Result does not contain "%s"', $key));
-            }
-
-            $result = $result[$key];
+        if ($expression !== null) {
+            $result = $this->search($expression, $failOnNull);
         }
 
         return $result;
     }
 
     /**
-     * @return string|null
+     * @param string|integer $offset
+     * @return mixed|null
      */
-    public function getError()
+    public function offsetGet($offset)
     {
-        try {
-            $error = $this->getResult('errors');
+        $data = $this->getResults();
 
-            if (is_array($error)) {
-                $error = current($error);
-            }
-
-            return $error;
-        } catch (Exception\ResponseException $e) {
-            try {
-                return $this->getResult('error');
-            } catch (Exception\ResponseException $e) {
-                return null;
-            }
+        if (isset($data[$offset])) {
+            return $data[$offset];
         }
+
+        return null;
     }
 
     /**
+     * @param string|integer $offset
+     * @param mixed $value
+     */
+    public function offsetSet($offset, $value)
+    {
+        throw new Exception\DomainException('Data cannot be set');
+    }
+
+    /**
+     * @param string|integer $offset
      * @return boolean
      */
-    public function hasError()
+    public function offsetExists($offset)
     {
-        return $this->getError() !== null;
+        return isset($this->getResults()[$offset]);
     }
 
     /**
-     * @return string
+     * @param string|integer $offset
      */
-    public function getJobId()
+    public function offsetUnset($offset)
     {
-        return $this->getResult('job_id');
+        throw new Exception\DomainException('Data cannot be unset');
     }
 
     /**
-     * @param $key
+     * @param string $expression
+     * @param boolean $failOnNull
+     * @return mixed|null
+     */
+    protected function search($expression, $failOnNull = false)
+    {
+        $result = JmesPath::search($expression, $this->getResults());
+
+        if ($result === null && $failOnNull === true) {
+            throw new Exception\RuntimeException(sprintf('Result does not contain "%s"', $expression));
+        }
+
+        return $result;
+    }
+
+    /**
      * @return array
      */
-    protected function getArrayResult($key)
+    protected function getResults()
+    {
+        $data = $this->getData();
+
+        if (!isset($data[self::ROOT]) || !is_array($data[self::ROOT])) {
+            throw new Exception\RuntimeException(sprintf('Response does not contain "%s"', self::ROOT));
+        }
+
+        return $this->getData()[self::ROOT];
+    }
+
+    /**
+     * @param $expression
+     * @return array
+     */
+    protected function getArrayResult($expression)
     {
         try {
-            $values = $this->getResult($key);
-        } catch (Exception\ResponseException $e) {
+            $values = $this->getResult($expression, false);
+        } catch (Exception\RuntimeException $e) {
             return array();
         }
 
         // Blitline seems to return null sometimes... (e.g. for original_meta)
         if ($values === null) {
-            $values = array();
+            return array();
         }
 
         if (!is_array($values)) {
             throw new Exception\RuntimeException(
                 sprintf(
                     'Invalid value for "%s"; expected array but got %s',
-                    $key,
+                    $expression,
                     is_object($values) ? get_class($values) : gettype($values)
                 )
             );

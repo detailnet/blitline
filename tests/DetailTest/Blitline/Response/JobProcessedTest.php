@@ -2,20 +2,29 @@
 
 namespace DetailTest\Blitline\Response;
 
+use Detail\Blitline\Exception;
 use Detail\Blitline\Response\JobProcessed;
 
 class JobProcessedTest extends ResponseTestCase
 {
-    public function testResponseCanBeCreatedFromGuzzleCommand()
+    public function testResponseCanBeCreatedFromHttpResponse()
     {
-        $response = JobProcessed::fromCommand(
-            $this->getCommand(array('results' => array()))
-        );
+        $response = JobProcessed::fromHttpResponse($this->getHttpResponseForResult());
+        $this->assertInstanceOf(JobProcessed::CLASS, $response);
 
-        $this->assertInstanceOf('Detail\Blitline\Response\JobProcessed', $response);
+        $this->setExpectedException(Exception\RuntimeException::CLASS);
+        $response = JobProcessed::fromHttpResponse($this->getHttpResponse());
+        $response->getResult();
+    }
 
-        $this->setExpectedException('Detail\Blitline\Client\Exception\ServerException');
-        JobProcessed::fromCommand($this->getCommand(array()));
+    public function testResponseCanBeCreatedFromData()
+    {
+        $key = 'key';
+        $value = 'value';
+
+        $response = JobProcessed::fromData(array('results' => array($key => $value)));
+        $this->assertInstanceOf(JobProcessed::CLASS, $response);
+        $this->assertEquals($value, $response->getResult($key));
     }
 
     public function testImagesCanBeGet()
@@ -33,7 +42,7 @@ class JobProcessedTest extends ResponseTestCase
         $response = $this->getJobProcessedResponse(array('failed_image_identifiers' => array()));
         $this->assertFalse($response->hasFailedImageIdentifiers());
 
-        $imageIdentifiers = array("200", "400");
+        $imageIdentifiers = array('200', '400');
 
         $response = $this->getJobProcessedResponse(
             array('failed_image_identifiers' => $imageIdentifiers)
@@ -42,7 +51,7 @@ class JobProcessedTest extends ResponseTestCase
         $this->assertTrue($response->hasFailedImageIdentifiers());
         $this->assertEquals($imageIdentifiers, $response->getFailedImageIdentifiers());
 
-        $this->setExpectedException('Detail\Blitline\Exception\RuntimeException');
+        $this->setExpectedException(Exception\RuntimeException::CLASS);
         $response = $this->getJobProcessedResponse(array('failed_image_identifiers' => 'invalid'));
         $response->getFailedImageIdentifiers();
 
@@ -64,6 +73,6 @@ class JobProcessedTest extends ResponseTestCase
      */
     protected function getJobProcessedResponse(array $data)
     {
-        return $this->getResponse('Detail\Blitline\Response\JobProcessed', $data);
+        return $this->getResponse(JobProcessed::CLASS, $data);
     }
 }

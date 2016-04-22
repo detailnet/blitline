@@ -2,32 +2,39 @@
 
 namespace DetailTest\Blitline\Response;
 
+use Detail\Blitline\Exception;
 use Detail\Blitline\Response\JobSubmitted;
 
 class JobSubmittedTest extends ResponseTestCase
 {
-    public function testRawResponseHandling()
+    public function testResponseCanBeCreatedFromHttpResponse()
     {
-        $rawResponse = array('results' => array('job_id' => 1));
-        $response = JobSubmitted::fromRawResponse($rawResponse);
+        $response = JobSubmitted::fromHttpResponse($this->getHttpResponseForResult());
+        $this->assertInstanceOf(JobSubmitted::CLASS, $response);
 
-        $this->assertEquals($rawResponse, JobSubmitted::toRawResponse($response));
-        $this->assertEquals($rawResponse, $response->toArray());
-
-        $this->setExpectedException('Detail\Blitline\Client\Exception\ServerException');
-        JobSubmitted::fromRawResponse(array());
+        $this->setExpectedException(Exception\RuntimeException::CLASS);
+        $response = JobSubmitted::fromHttpResponse($this->getHttpResponse());
+        $response->getResult();
     }
 
-    public function testResponseCanBeCreatedFromGuzzleCommand()
+    public function testResponseCanBeCreatedFromData()
     {
-        $response = JobSubmitted::fromCommand(
-            $this->getCommand(array('results' => array()))
-        );
+        $key = 'key';
+        $value = 'value';
 
-        $this->assertInstanceOf('Detail\Blitline\Response\JobSubmitted', $response);
+        $response = JobSubmitted::fromData(array('results' => array($key => $value)));
+        $this->assertInstanceOf(JobSubmitted::CLASS, $response);
+        $this->assertEquals($value, $response->getResult($key));
+    }
 
-        $this->setExpectedException('Detail\Blitline\Client\Exception\ServerException');
-        JobSubmitted::fromCommand($this->getCommand(array()));
+    public function testImagesCanBeGet()
+    {
+        $images = array(array('image_identifier' => 'some-image-identifier'));
+        $result = array('images' => $images);
+
+        $response = $this->getJobSubmittedResponse($result);
+
+        $this->assertEquals($images, $response->getImages());
     }
 
     /**
@@ -36,6 +43,6 @@ class JobSubmittedTest extends ResponseTestCase
      */
     protected function getJobSubmittedResponse(array $data)
     {
-        return $this->getResponse('Detail\Blitline\Response\JobSubmitted', $data);
+        return $this->getResponse(JobSubmitted::CLASS, $data);
     }
 }

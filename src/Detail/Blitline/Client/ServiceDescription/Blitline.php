@@ -1,5 +1,7 @@
 <?php
 
+use Detail\Blitline\Response;
+
 return array(
     'name'        => 'Blitline',
     'description' => 'Image processing in the cloud',
@@ -17,9 +19,10 @@ return array(
                     'required'    => true,
                 ),
             ),
-            'responseClass' => 'Detail\Blitline\Response\JobProcessed',
+            'responseClass' => Response\JobProcessed::CLASS,
             'data' => array(
-                'requestOptions' => array('timeout' => 60 * 10), // Wait 10 minutes for the completion of a job
+//                'requestOptions' => array('timeout' => 60 * 10), // Wait 10 minutes for the completion of a job
+                'requestOptions' => array('timeout' => 3), // Wait 10 minutes for the completion of a job
             ),
         ),
         'submitJob' => array(
@@ -45,7 +48,7 @@ return array(
             'additionalParameters' => array(
                 'location' => 'json',
             ),
-            'responseClass' => 'Detail\Blitline\Response\JobSubmitted',
+            'responseClass' => Response\JobSubmitted::CLASS,
         ),
     ),
 );

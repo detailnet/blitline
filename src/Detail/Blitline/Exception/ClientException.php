@@ -2,6 +2,6 @@
 
 namespace Detail\Blitline\Exception;
 
-class ResponseException extends RuntimeException
+class ClientException extends OperationException
 {
 }
