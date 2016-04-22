@@ -102,7 +102,7 @@ class BlitlineClientTest extends TestCase
 
         $client = BlitlineClient::factory($config);
 
-        $this->assertInstanceOf('Detail\Blitline\Job\JobBuilder', $client->getJobBuilder());
+        $this->assertInstanceOf(JobBuilder::CLASS, $client->getJobBuilder());
 
         $jobBuilder = new JobBuilder();
 

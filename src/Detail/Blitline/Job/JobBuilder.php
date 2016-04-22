@@ -3,7 +3,6 @@
 namespace Detail\Blitline\Job;
 
 use Detail\Blitline\Exception\RuntimeException;
-use Detail\Blitline\Job\Definition;
 
 class JobBuilder implements
     JobBuilderInterface
@@ -92,15 +91,12 @@ class JobBuilder implements
             return $options;
         }
 
-        $jobInterface = Definition\JobDefinitionInterface::CLASS;
-        $functionInterface = Definition\FunctionDefinitionInterface::CLASS;
-
         $prefix = null;
         $prefixSeparator = '.';
 
-        if ($definition instanceof $jobInterface) {
+        if ($definition instanceof Definition\JobDefinitionInterface) {
             $prefix = 'job';
-        } elseif ($definition instanceof $functionInterface) {
+        } elseif ($definition instanceof Definition\FunctionDefinitionInterface) {
             $prefix = 'function';
         } else {
             return array();

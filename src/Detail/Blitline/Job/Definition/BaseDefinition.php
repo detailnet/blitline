@@ -8,6 +8,9 @@ use RecursiveArrayIterator;
 
 abstract class BaseDefinition
 {
+    /**
+     * @var array
+     */
     protected $options = array();
 
     /**

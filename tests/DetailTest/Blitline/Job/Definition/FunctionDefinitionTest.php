@@ -6,9 +6,12 @@ use Detail\Blitline\Job\Definition\FunctionDefinition;
 
 class FunctionDefinitionTest extends DefinitionTestCase
 {
+    /**
+     * @return mixed
+     */
     protected function getDefinitionClass()
     {
-        return 'Detail\Blitline\Job\Definition\FunctionDefinition';
+        return FunctionDefinition::CLASS;
     }
 
     public function testNameCanBeSet()

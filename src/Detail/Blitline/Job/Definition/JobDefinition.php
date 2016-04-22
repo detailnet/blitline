@@ -9,6 +9,9 @@ class JobDefinition extends BaseDefinition implements JobDefinitionInterface
     const OPTION_VERSION      = 'v';
     const OPTION_FUNCTIONS    = 'functions';
 
+    /**
+     * @var array
+     */
     protected $options = array(
         self::OPTION_VERSION   => '1.21',
         self::OPTION_FUNCTIONS => array(),

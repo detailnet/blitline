@@ -4,6 +4,8 @@ namespace DetailTest\Blitline\Job;
 
 use PHPUnit_Framework_TestCase as TestCase;
 
+use Detail\Blitline\Exception;
+use Detail\Blitline\Job\Definition;
 use Detail\Blitline\Job\JobBuilder;
 
 class JobBuilderTest extends TestCase
@@ -85,7 +87,7 @@ class JobBuilderTest extends TestCase
     public function testJobClassCanBeSet()
     {
         $this->assertEquals(
-            'Detail\Blitline\Job\Definition\JobDefinition',
+            Definition\JobDefinition::CLASS,
             $this->jobBuilder->getJobClass()
         );
 
@@ -99,7 +101,7 @@ class JobBuilderTest extends TestCase
     public function testFunctionClassCanBeSet()
     {
         $this->assertEquals(
-            'Detail\Blitline\Job\Definition\FunctionDefinition',
+            Definition\FunctionDefinition::CLASS,
             $this->jobBuilder->getFunctionClass()
         );
 
@@ -142,19 +144,19 @@ class JobBuilderTest extends TestCase
     {
         $job = $this->jobBuilder->createJob();
 
-        $this->assertInstanceOf('Detail\Blitline\Job\Definition\JobDefinition', $job);
+        $this->assertInstanceOf(Definition\JobDefinition::CLASS, $job);
     }
 
     public function testCanCreateFunctionDefinition()
     {
         $job = $this->jobBuilder->createFunction();
 
-        $this->assertInstanceOf('Detail\Blitline\Job\Definition\FunctionDefinition', $job);
+        $this->assertInstanceOf(Definition\FunctionDefinition::CLASS, $job);
     }
 
     public function testDefinitionCreationWithMissingClassThrowsException()
     {
-        $this->setExpectedException('Detail\Blitline\Exception\RuntimeException');
+        $this->setExpectedException(Exception\RuntimeException::CLASS);
 
         $this->jobBuilder->setJobClass('NonExistingDefinitionClass');
         $this->jobBuilder->createJob();
@@ -162,10 +164,10 @@ class JobBuilderTest extends TestCase
 
     public function testDefinitionCreationWithInvalidInterfaceThrowsException()
     {
-        $this->setExpectedException('Detail\Blitline\Exception\RuntimeException');
+        $this->setExpectedException(Exception\RuntimeException::CLASS);
 
         // Using existing class which doesn't implement Detail\Blitline\Job\JobBuilder\Definition\DefinitionInterface
-        $this->jobBuilder->setJobClass('Detail\Blitline\Job\JobBuilder');
+        $this->jobBuilder->setJobClass(JobBuilder::CLASS);
         $this->jobBuilder->createJob();
     }
 
@@ -203,9 +205,9 @@ class JobBuilderTest extends TestCase
             array('job.src' => 'job.src', 'function.name' => 'function.name')
         );
 
-        $definition = $this->getMock('Detail\Blitline\Job\Definition\DefinitionInterface');
+        $definition = $this->getMock(Definition\DefinitionInterface::CLASS);
 
-        /** @var \Detail\Blitline\Job\Definition\DefinitionInterface $definition */
+        /** @var Definition\DefinitionInterface $definition */
 
         $this->assertEquals(array(), $this->jobBuilder->getDefaultOptions($definition));
     }

@@ -7,9 +7,12 @@ use Detail\Blitline\Job\Definition\JobDefinition;
 
 class JobDefinitionTest extends DefinitionTestCase
 {
+    /**
+     * @return string
+     */
     protected function getDefinitionClass()
     {
-        return 'Detail\Blitline\Job\Definition\JobDefinition';
+        return JobDefinition::CLASS;
     }
 
     public function testSourceUrlCanBeSet()

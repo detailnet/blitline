@@ -2,6 +2,7 @@
 
 namespace Detail\Blitline\Response;
 
+use GuzzleHttp\Exception\ParseException;
 use GuzzleHttp\Message\Response as HttpResponse;
 use GuzzleHttp\Message\ResponseInterface as HttpResponseInterface;
 use GuzzleHttp\Stream\Stream;
@@ -68,7 +69,12 @@ abstract class BaseResponse implements
     public function getData()
     {
         if ($this->data === null) {
-            $this->data = $this->getHttpResponse()->json() ?: array();
+            try {
+                $this->data = $this->getHttpResponse()->json() ?: array();
+            } catch (ParseException $e) {
+                // Handle as server exception because it was the server that produces invalid JSON...
+                throw new Exception\ServerException($e->getMessage(), 0, $e);
+            }
         }
 
         return $this->data;
@@ -77,7 +83,7 @@ abstract class BaseResponse implements
     /**
      * @param string $expression
      * @param boolean $failOnNull
-     * @return array|mixed
+     * @return array|mixed|null
      */
     public function getResult($expression = null, $failOnNull = false)
     {
