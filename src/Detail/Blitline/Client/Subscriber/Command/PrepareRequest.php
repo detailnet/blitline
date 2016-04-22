@@ -1,12 +1,12 @@
 <?php
 
-namespace Detail\Blitline\Client\Subscriber;
+namespace Detail\Blitline\Client\Subscriber\Command;
 
 use GuzzleHttp\Command\Event\PreparedEvent;
 use GuzzleHttp\Command\Guzzle\DescriptionInterface as ServiceDescriptionInterface;
 use GuzzleHttp\Event\SubscriberInterface;
 
-class RequestOptions implements
+class PrepareRequest implements
     SubscriberInterface
 {
     /**
@@ -35,24 +35,25 @@ class RequestOptions implements
      */
     public function onPrepared(PreparedEvent $event)
     {
-        $this->applyRequestOptions($event);
+        // Supports the following options:
+        // 'connect_timeout', 'timeout', 'verify', 'ssl_key',
+        // 'cert', 'proxy', 'debug', 'save_to', 'stream',
+        // 'expect', 'future'
+        $event->getRequest()->getConfig()->overwriteWith(
+            $this->getRequestOptions($event)
+        );
     }
 
     /**
      * @param PreparedEvent $event
+     * @return array
      */
-    protected function applyRequestOptions(PreparedEvent $event)
+    protected function getRequestOptions(PreparedEvent $event)
     {
         $command = $event->getCommand();
         $operation = $this->description->getOperation($command->getName());
         $requestOptions = $operation->getData('requestOptions');
 
-        if (is_array($requestOptions)) {
-            // Supports the following options:
-            // 'connect_timeout', 'timeout', 'verify', 'ssl_key',
-            // 'cert', 'proxy', 'debug', 'save_to', 'stream',
-            // 'expect', 'future'
-            $event->getRequest()->getConfig()->overwriteWith($requestOptions);
-        }
+        return is_array($requestOptions) ? $requestOptions : array();
     }
 }

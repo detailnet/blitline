@@ -1,6 +1,6 @@
 <?php
 
-namespace Detail\Blitline\Client\Subscriber;
+namespace Detail\Blitline\Client\Subscriber\Command;
 
 use GuzzleHttp\Command\Event\ProcessEvent;
 use GuzzleHttp\Command\Guzzle\DescriptionInterface as ServiceDescriptionInterface;
@@ -38,20 +38,32 @@ class ProcessResponse implements
      */
     public function onProcess(ProcessEvent $event)
     {
+        $result = $this->createResult($event);
+
+        if ($result !== null) {
+            $event->setResult($result);
+        }
+    }
+
+    /**
+     * @param ProcessEvent $event
+     * @return ResponseInterface|null
+     */
+    protected function createResult(ProcessEvent $event)
+    {
         // Only add a result object if no exception was encountered.
         if ($event->getException()) {
-            return;
+            return null;
         }
 
         $command = $event->getCommand();
 
         // Do not overwrite a previous result
         if ($event->getResult()) {
-            return;
+            return null;
         }
 
         $operation = $this->description->getOperation($command->getName());
-
         $responseClass = $operation->getResponseModel();
 
         if ($responseClass === null) {
@@ -74,8 +86,6 @@ class ProcessResponse implements
 
         /** @var ResponseInterface $responseClass */
 
-        $result = $responseClass::fromHttpResponse($event->getResponse());
-
-        $event->setResult($result);
+        return $responseClass::fromHttpResponse($event->getResponse());
     }
 }

@@ -4,7 +4,6 @@ namespace Detail\Blitline\Client;
 
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\ClientInterface as HttpClientInterface;
-use GuzzleHttp\Command\Exception\CommandException;
 use GuzzleHttp\Command\Guzzle\Description as ServiceDescription;
 use GuzzleHttp\Command\Guzzle\DescriptionInterface as ServiceDescriptionInterface;
 use GuzzleHttp\Command\Guzzle\GuzzleClient as ServiceClient;
@@ -15,6 +14,7 @@ use Detail\Blitline\Job\Definition\DefinitionInterface;
 use Detail\Blitline\Job\JobBuilder;
 use Detail\Blitline\Job\JobBuilderInterface;
 use Detail\Blitline\Response;
+
 
 /**
  * Blitline API client.
@@ -82,7 +82,7 @@ class BlitlineClient extends ServiceClient
         $config = array_replace_recursive($defaultOptions, $options, $overrideOptions);
 
         $httpClient = new HttpClient($config);
-        $httpClient->getEmitter()->attach(new Subscriber\ErrorHandler());
+        $httpClient->getEmitter()->attach(new Subscriber\Http\ProcessError());
 
         $description = new ServiceDescription(require __DIR__ . '/ServiceDescription/Blitline.php');
         $client = new static($httpClient, $description, $jobBuilder);
@@ -111,8 +111,8 @@ class BlitlineClient extends ServiceClient
         }
 
         $emitter = $this->getEmitter();
-        $emitter->attach(new Subscriber\ProcessResponse($description));
-        $emitter->attach(new Subscriber\RequestOptions($description));
+        $emitter->attach(new Subscriber\Command\PrepareRequest($description));
+        $emitter->attach(new Subscriber\Command\ProcessResponse($description));
     }
 
     /**
@@ -170,12 +170,8 @@ class BlitlineClient extends ServiceClient
         // e.g. when http://api.blitline.com/ is unreachable or the request times out.
         try {
             return parent::__call($method, $args);
-        } catch (CommandException $e) {
-            throw new Exception\RuntimeException(
-                sprintf('Request failed: %s', $e->getMessage()),
-                0,
-                $e
-            );
+        } catch (\Exception $e) {
+            throw Exception\OperationException::wrapException($e);
         }
     }
 }

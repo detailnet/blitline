@@ -1,13 +1,13 @@
 <?php
 
-namespace Detail\Blitline\Client\Subscriber;
+namespace Detail\Blitline\Client\Subscriber\Http;
 
 use GuzzleHttp\Event\CompleteEvent;
 use GuzzleHttp\Exception\ParseException;
 use GuzzleHttp\Message\ResponseInterface as Response;
-use GuzzleHttp\Subscriber\HttpError as InternalErrorHandler;
+use GuzzleHttp\Subscriber\HttpError;
 
-class ErrorHandler extends InternalErrorHandler
+class ProcessError extends HttpError
 {
     /**
      * @param CompleteEvent $event
@@ -15,7 +15,7 @@ class ErrorHandler extends InternalErrorHandler
     public function onComplete(CompleteEvent $event)
     {
         $response = $event->getResponse();
-        $response->setReasonPhrase($this->getErrorMessage($response));
+        $response->setReasonPhrase($this->extractErrorMessage($response));
 
         parent::onComplete($event);
     }
@@ -26,21 +26,23 @@ class ErrorHandler extends InternalErrorHandler
      * @param Response $response
      * @return string
      */
-    protected function getErrorMessage(Response $response)
+    protected function extractErrorMessage(Response $response)
     {
-        // This is the default:
+        // This is the default
         $error = $response->getReasonPhrase(); // e.g. "Bad Request"
 
         try {
             // We might be able to fetch an error message from the response
             $responseData = $response->json();
 
-            if (isset($responseData['title'])) {
-                $error = $responseData['title'];
-            }
+            if (isset($responseData['results'])) {
+                $result = $responseData['results'];
 
-            if (isset($responseData['detail'])) {
-                $error .= ': ' . $responseData['detail'];
+                if (isset($result['errors']) && is_array($result['errors']) && count($result['errors']) > 0) {
+                    $error = current($result['errors']);
+                } elseif (isset($result['error'])) {
+                    $error = $result['error'];
+                }
             }
         } catch (ParseException $e) {
             // Do nothing
