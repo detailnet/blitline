@@ -15,7 +15,6 @@ use Detail\Blitline\Job\JobBuilder;
 use Detail\Blitline\Job\JobBuilderInterface;
 use Detail\Blitline\Response;
 
-
 /**
  * Blitline API client.
  *
