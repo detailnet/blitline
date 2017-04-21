@@ -15,17 +15,21 @@ class JobDefinitionTest extends DefinitionTestCase
         return JobDefinition::CLASS;
     }
 
-    public function testSourceUrlCanBeSet()
+    public function testSourceCanBeSet()
     {
         $definition = $this->getDefinition();
-        $url = 'http://www.detailnet.ch/image.jpg';
+        $src = array(
+            'name' => 's3',
+            'bucket' => 'curzio-della-santa',
+            'key' => 'test-files/Desert.jpg',
+        );
 
-        $this->setMethodReturnValue($definition, 'getOption', $url);
+        $this->setMethodReturnValue($definition, 'getOption', $src);
 
         /** @var JobDefinition $definition */
 
-        $this->assertEquals($definition, $definition->setSourceUrl($url));
-        $this->assertEquals($url, $definition->getSourceUrl());
+        $this->assertEquals($definition, $definition->setSource($src));
+        $this->assertEquals($src, $definition->getSource());
     }
 
     public function testPostbackUrlCanBeSet()

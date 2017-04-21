@@ -20,16 +20,16 @@ class JobDefinition extends BaseDefinition implements JobDefinitionInterface
     /**
      * @inheritdoc
      */
-    public function setSourceUrl($url)
+    public function setSource(array $src)
     {
-        $this->setOption(self::OPTION_SOURCE, $url);
+        $this->setOption(self::OPTION_SOURCE, $src);
         return $this;
     }
 
     /**
      * @inheritdoc
      */
-    public function getSourceUrl()
+    public function getSource()
     {
         return $this->getOption(self::OPTION_SOURCE);
     }

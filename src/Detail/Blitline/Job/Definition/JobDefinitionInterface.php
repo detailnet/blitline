@@ -5,15 +5,15 @@ namespace Detail\Blitline\Job\Definition;
 interface JobDefinitionInterface extends DefinitionInterface
 {
     /**
-     * @param string $url
+     * @param array $src
      * @return JobDefinitionInterface
      */
-    public function setSourceUrl($url);
+    public function setSource(array $src);
 
     /**
-     * @return string
+     * @return array
      */
-    public function getSourceUrl();
+    public function getSource();
 
     /**
      * @param string $url

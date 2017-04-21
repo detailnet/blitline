@@ -31,9 +31,9 @@ return array(
             'documentationUrl' => 'http://www.blitline.com/docs/api',
             'parameters'       => array(
                 'src' => array(
-                    'description' => 'The location of the image you wish to process',
+                    'description' => 'The S3 location of the image you wish to process',
                     'location'    => 'json',
-                    'type'        => 'string',
+                    'type'        => 'array',
                     'required'    => true,
                 ),
                 /** @todo Define functions properly and remove "additionalParameters" as catch-all... */

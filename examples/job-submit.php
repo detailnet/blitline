@@ -4,15 +4,11 @@ use Detail\Blitline\Client\BlitlineClient;
 
 $config = require 'bootstrap.php';
 
-$imageUrl = isset($_GET['image_url']) ? $_GET['image_url'] : null;
-
-if (!$imageUrl) {
-    throw new RuntimeException('Missing or invalid parameter "image_url"');
-}
-
-$imageSize = isset($_GET['image_size']) ? $_GET['image_size'] : 200;
-$image = new SplFileInfo($imageUrl);
-$imageName = $image->getBasename();
+//$imageUrl = isset($_GET['image_url']) ? $_GET['image_url'] : null;
+//
+//if (!$imageUrl) {
+//    throw new RuntimeException('Missing or invalid parameter "image_url"');
+//}
 
 $getConfig = function($optionName) use ($config) {
     if (!isset($config[$optionName])) {
@@ -21,6 +17,10 @@ $getConfig = function($optionName) use ($config) {
 
     return $config[$optionName];
 };
+
+$imageSize = isset($_GET['image_size']) ? $_GET['image_size'] : 200;
+$image = new SplFileInfo($getConfig('s3file'));
+$imageName = $image->getBasename();
 
 $blitline = BlitlineClient::factory($config);
 
@@ -31,14 +31,19 @@ $jobBuilder->setDefaultOption(
     array(
         's3_destination' => array(
             'bucket' => $getConfig('s3bucket'),
-//            'key' => $getConfig('s3path') . '/' . $imageName . '-' . $imageSize . '_blitline.jpg',
+//            'key' => $getConfig('s3prefix') . '/' . $imageName . '-' . $imageSize . '_blitline.jpg',
         ),
     )
 );
 
 $job = $jobBuilder->createJob()
-    ->setSourceUrl($imageUrl)
-    ->addFunction(
+    ->setSource(
+        array(
+            'name' => 's3',
+            'bucket' => $getConfig('s3bucket'),
+            'key' => $getConfig('s3prefix') . '/' . $getConfig('s3file'),
+        )
+    )->addFunction(
         $jobBuilder->createFunction()
             ->setName('resize_to_fit')
             ->setParams(
@@ -53,7 +58,7 @@ $job = $jobBuilder->createJob()
                     'image_identifier' => $imageName,
                     's3_destination' => array(
 //                        'bucket' => $getConfig('s3bucket'),
-                        'key' => $getConfig('s3path') . '/' . $imageName . '-' . $imageSize . '_blitline.jpg',
+                        'key' => $getConfig('s3prefix') . '/' . $imageName . '-' . $imageSize . '_blitline.jpg',
                     ),
                 )
             )
