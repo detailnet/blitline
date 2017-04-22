@@ -54,7 +54,6 @@ class JobProcessedTest extends ResponseTestCase
         $this->setExpectedException(Exception\RuntimeException::CLASS);
         $response = $this->getJobProcessedResponse(array('failed_image_identifiers' => 'invalid'));
         $response->getFailedImageIdentifiers();
-
     }
 
     public function testOriginalMetaCanBeGet()
