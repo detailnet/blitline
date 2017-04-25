@@ -4,6 +4,8 @@ namespace Detail\Blitline\Job\Definition;
 
 interface SourceInterface
 {
+    const TYPE_URL = 'url';
+
     /**
      * @return string
      */

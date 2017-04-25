@@ -7,9 +7,6 @@ use Detail\Blitline\Job\Definition;
 abstract class BaseSource implements
     Definition\SourceInterface
 {
-    const TYPE_S3 = 's3';
-    const TYPE_URL = 'url';
-
     /**
      * @var string
      */

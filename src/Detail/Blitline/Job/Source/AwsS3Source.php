@@ -3,8 +3,10 @@
 namespace Detail\Blitline\Job\Source;
 
 use Detail\Blitline\Exception;
+use Detail\Blitline\Job\Definition\AwsS3SourceInterface;
 
-class AwsS3Source extends BaseSource
+class AwsS3Source extends BaseSource implements
+    AwsS3SourceInterface
 {
     /**
      * @var string

@@ -10,10 +10,9 @@ use GuzzleHttp\Command\Guzzle\GuzzleClient as ServiceClient;
 
 use Detail\Blitline\Client\Subscriber;
 use Detail\Blitline\Exception;
-use Detail\Blitline\Job\Definition\DefinitionInterface;
+use Detail\Blitline\Job\Definition;
 use Detail\Blitline\Job\JobBuilder;
 use Detail\Blitline\Job\JobBuilderInterface;
-use Detail\Blitline\Job\Source;
 use Detail\Blitline\Response;
 
 /**
@@ -153,31 +152,31 @@ class BlitlineClient extends ServiceClient
     }
 
     /**
-     * @param array|DefinitionInterface $job
+     * @param array|Definition\DefinitionInterface $job
      * @return Response\JobSubmitted
      */
     public function submitJob($job = array())
     {
-        $job = $job instanceof DefinitionInterface ? $job->toArray() : $job;
+        $job = $job instanceof Definition\DefinitionInterface ? $job->toArray() : $job;
 
         if (!isset($job['src'])) {
             throw new Exception\InvalidArgumentException("Parameter src is mandatory");
         }
 
         // Need to convert 'src' to array or string, depending on type
-        /** @var Source\BaseSource $source */
+        /** @var Definition\SourceInterface $source */
         $source = $job['src'];
 
         switch ($source->getType()) {
-            case Source\BaseSource::TYPE_S3:
-                /** @var Source\AwsS3Source $source */
+            case Definition\AwsS3SourceInterface::TYPE_S3:
+                /** @var Definition\AwsS3SourceInterface $source */
                 $job['src'] = array(
                     'name' => 's3',
                     'bucket' => $source->getBucket(),
                     'key' => $source->getKey()
                 );
                 break;
-            case Source\BaseSource::TYPE_URL:
+            case Definition\SourceInterface::TYPE_URL:
             default:
                 $job['src'] = $source->getUrl();
                 break;
@@ -193,8 +192,8 @@ class BlitlineClient extends ServiceClient
      */
     public function __call($method, array $args)
     {
-        if (isset($args[0]) && $args[0] instanceof DefinitionInterface) {
-            /** @var DefinitionInterface $definition */
+        if (isset($args[0]) && $args[0] instanceof Definition\DefinitionInterface) {
+            /** @var Definition\DefinitionInterface $definition */
             $definition = $args[0];
             $args[0] = $definition->toArray();
         }
