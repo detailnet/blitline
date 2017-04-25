@@ -1,14 +1,14 @@
 <?php
 
 use Detail\Blitline\Client\BlitlineClient;
-use Detail\Blitline\Job\Source\UrlSource;
+use Detail\Blitline\Job\Source\AwsS3Source;
 
 $config = require 'bootstrap.php';
 
-$imageUrl = isset($_GET['image_url']) ? $_GET['image_url'] : null;
+$imageKey = isset($_GET['image_key']) ? $_GET['image_key'] : null;
 
-if (!$imageUrl) {
-    throw new RuntimeException('Missing or invalid parameter "image_url"');
+if (!$imageKey) {
+    throw new RuntimeException('Missing or invalid parameter "image_key"');
 }
 
 $getConfig = function($optionName) use ($config) {
@@ -20,7 +20,7 @@ $getConfig = function($optionName) use ($config) {
 };
 
 $imageSize = isset($_GET['image_size']) ? $_GET['image_size'] : 200;
-$image = new SplFileInfo($imageUrl);
+$image = new SplFileInfo($imageKey);
 $imageName = $image->getBasename();
 
 $blitline = BlitlineClient::factory($config);
@@ -39,7 +39,11 @@ $jobBuilder->setDefaultOption(
 
 $job = $jobBuilder->createJob()
     ->setSource(
-        new UrlSource($imageUrl)
+        new AwsS3Source(
+            $getConfig('s3bucket'),
+            $imageKey,
+            'eu-west-1'
+        )
     )->addFunction(
         $jobBuilder->createFunction()
             ->setName('resize_to_fit')

@@ -2,6 +2,6 @@
 
 return array(
     'application_id' => 'your-blitline-application-id',
-    's3bucket' => 'your-bucket-name',
-    's3path' => 'test-files', // Or any other path under your bucket
+    's3bucket' => 'your-bucket-name'
+    's3prefix' => 'test-files', // Used for storage
 );

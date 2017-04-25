@@ -2,6 +2,8 @@
 
 namespace Detail\Blitline\Job\Definition;
 
+use Detail\Blitline\Job\Source;
+
 class JobDefinition extends BaseDefinition implements JobDefinitionInterface
 {
     const OPTION_SOURCE       = 'src';
@@ -22,7 +24,14 @@ class JobDefinition extends BaseDefinition implements JobDefinitionInterface
      */
     public function setSourceUrl($url)
     {
-        $this->setOption(self::OPTION_SOURCE, $url);
+        // Try to set an AWS S3 source first, to allow private access to objects
+        try {
+            $src = Source\AwsS3Source::fromUrl($url);
+        } catch (\Exception $e) {
+            $src = new Source\UrlSource($url);
+        }
+
+        $this->setOption(self::OPTION_SOURCE, $src);
         return $this;
     }
 
@@ -30,6 +39,23 @@ class JobDefinition extends BaseDefinition implements JobDefinitionInterface
      * @inheritdoc
      */
     public function getSourceUrl()
+    {
+        return $this->getOption(self::OPTION_SOURCE)->getUrl();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setSource(SourceInterface $src)
+    {
+        $this->setOption(self::OPTION_SOURCE, $src);
+        return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSource()
     {
         return $this->getOption(self::OPTION_SOURCE);
     }

@@ -7,13 +7,26 @@ interface JobDefinitionInterface extends DefinitionInterface
     /**
      * @param string $url
      * @return JobDefinitionInterface
+     * @deprecated Will be removed in future versions, use 'setSource' instead
      */
     public function setSourceUrl($url);
 
     /**
      * @return string
+     * @deprecated Will be removed in future versions, use 'getSource' instead
      */
     public function getSourceUrl();
+
+    /**
+     * @param SourceInterface $src
+     * @return JobDefinitionInterface
+     */
+    public function setSource(SourceInterface $src);
+
+    /**
+     * @return SourceInterface
+     */
+    public function getSource();
 
     /**
      * @param string $url
