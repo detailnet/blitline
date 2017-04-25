@@ -4,6 +4,7 @@ namespace DetailTest\Blitline\Job\Definition;
 
 use Detail\Blitline\Job\Definition\FunctionDefinition;
 use Detail\Blitline\Job\Definition\JobDefinition;
+use Detail\Blitline\Job\Source;
 
 class JobDefinitionTest extends DefinitionTestCase
 {
@@ -18,10 +19,9 @@ class JobDefinitionTest extends DefinitionTestCase
     public function testSourceCanBeSet()
     {
         $definition = $this->getDefinition();
-        $src = array(
-            'name' => 's3',
-            'bucket' => 'curzio-della-santa',
-            'key' => 'test-files/Desert.jpg',
+        $src = new Source\AwsS3Source(
+            'curzio-della-santa',
+            'test-files/Desert.jpg'
         );
 
         $this->setMethodReturnValue($definition, 'getOption', $src);

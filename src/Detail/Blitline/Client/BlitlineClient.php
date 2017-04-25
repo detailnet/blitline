@@ -13,13 +13,13 @@ use Detail\Blitline\Exception;
 use Detail\Blitline\Job\Definition\DefinitionInterface;
 use Detail\Blitline\Job\JobBuilder;
 use Detail\Blitline\Job\JobBuilderInterface;
+use Detail\Blitline\Job\Source;
 use Detail\Blitline\Response;
 
 /**
  * Blitline API client.
  *
  * @method Response\JobProcessed pollJob(array $params = array())
- * @method Response\JobSubmitted submitJob(mixed $job = array())
  */
 class BlitlineClient extends ServiceClient
 {
@@ -150,6 +150,40 @@ class BlitlineClient extends ServiceClient
     {
         $this->jobBuilder = $jobBuilder;
         return $this;
+    }
+
+    /**
+     * @param array|DefinitionInterface $job
+     * @return Response\JobSubmitted
+     */
+    public function submitJob($job = array())
+    {
+        $job = $job instanceof DefinitionInterface ? $job->toArray() : $job;
+
+        if (!isset($job['src'])) {
+            throw new Exception\InvalidArgumentException("Parameter src is mandatory");
+        }
+
+        // Need to convert 'src' to array or string, depending on type
+        /** @var Source\BaseSource $source */
+        $source = $job['src'];
+
+        switch ($source->getType()) {
+            case Source\BaseSource::TYPE_S3:
+                /** @var Source\AwsS3Source $source */
+                $job['src'] = array(
+                    'name' => 's3',
+                    'bucket' => $source->getBucket(),
+                    'key' => $source->getKey()
+                );
+                break;
+            case Source\BaseSource::TYPE_URL:
+            default:
+                $job['src'] = $source->getUrl();
+                break;
+        }
+
+        return $this->__call(__FUNCTION__, array($job));
     }
 
     /**
