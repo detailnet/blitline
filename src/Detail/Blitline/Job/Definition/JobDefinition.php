@@ -2,7 +2,7 @@
 
 namespace Detail\Blitline\Job\Definition;
 
-use  Detail\Blitline\Job\Source;
+use Detail\Blitline\Job\Source;
 
 class JobDefinition extends BaseDefinition implements JobDefinitionInterface
 {
