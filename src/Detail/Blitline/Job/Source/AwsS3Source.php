@@ -9,9 +9,9 @@ class AwsS3Source extends BaseSource implements
     AwsS3SourceInterface
 {
     /**
-     * @var string
+     * @var string|null
      */
-    protected $region = 'eu-west-1';
+    protected $region;
 
     /**
      * @var string
@@ -37,7 +37,7 @@ class AwsS3Source extends BaseSource implements
             throw new Exception\InvalidArgumentException('Provided URL is not of an AWS s3 bucket: Invalid scheme');
         }
 
-        if (substr($s3region, 0, 3) !== 's3-') {
+        if (substr($s3region, 0, 3) !== 's3-' && $s3region !== 's3') {
             throw new Exception\InvalidArgumentException('Provided URL is not of an AWS s3 bucket: Invalid region specification');
         }
 
@@ -51,8 +51,8 @@ class AwsS3Source extends BaseSource implements
 
         return new static(
             $bucket,
-            ltrim($urlParts['path'], '/'),
-            substr($s3region, 3)
+            urldecode(ltrim($urlParts['path'], '/')),
+            $s3region === 's3' ? null : substr($s3region, 3)
         );
     }
 
@@ -74,7 +74,7 @@ class AwsS3Source extends BaseSource implements
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getRegion()
     {
@@ -103,9 +103,9 @@ class AwsS3Source extends BaseSource implements
     public function getUrl()
     {
         return sprintf(
-            'https://%s.s3-%s.amazonaws.com/%s',
+            'https://%s.s3%s.amazonaws.com/%s',
             $this->getBucket(),
-            $this->getRegion(),
+            $this->getRegion() === null ? '' : ('-' . $this->getRegion()),
             $this->getKey()
         );
     }
