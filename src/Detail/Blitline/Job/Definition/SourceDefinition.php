@@ -2,7 +2,8 @@
 
 namespace Detail\Blitline\Job\Definition;
 
-class SourceDefinition extends BaseDefinition implements SourceDefinitionInterface
+class SourceDefinition extends BaseDefinition implements
+    SourceDefinitionInterface
 {
     const OPTION_NAME   = 'name';
     const OPTION_BUCKET = 'bucket';
@@ -16,8 +17,8 @@ class SourceDefinition extends BaseDefinition implements SourceDefinitionInterfa
     );
 
     /**
- * @inheritdoc
- */
+     * @inheritdoc
+     */
     public function setName($name)
     {
         $this->setOption(self::OPTION_NAME, $name);
