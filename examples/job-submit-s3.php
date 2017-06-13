@@ -1,7 +1,6 @@
 <?php
 
 use Detail\Blitline\Client\BlitlineClient;
-use Detail\Blitline\Job\Source\AwsS3Source;
 
 $config = require 'bootstrap.php';
 

@@ -30,7 +30,7 @@ class JobDefinition extends BaseDefinition implements JobDefinitionInterface
 
         if ($src instanceof SourceDefinition) {
             $path = $src->getKey();
-        } elseif (is_string($src) && (parse_url($src) !== false)){
+        } elseif (is_string($src) && (parse_url($src) !== false)) {
             $path = parse_url($src, PHP_URL_PATH);
         }
 
