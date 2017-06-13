@@ -182,6 +182,16 @@ class BlitlineClient extends ServiceClient
                 break;
         }
 
+        // If source is a PDF add specific conversion parameters to process only first page and avoid color loss
+        if ('pdf' === strtolower(pathinfo(parse_url($source->getUrl(), PHP_URL_PATH), PATHINFO_EXTENSION))) {
+            $job['src_type'] = 'pdf_one_page';
+            $job['src_data'] = array(
+                'page' => 1,
+                'colorspace' => 'rgb',
+                'dpi' => 300,
+            );
+        }
+
         return $this->__call(__FUNCTION__, array($job));
     }
 

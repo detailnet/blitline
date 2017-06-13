@@ -1,7 +1,7 @@
 <?php
 
 use Detail\Blitline\Client\BlitlineClient;
-use Detail\Blitline\Job\Source\UrlSource;
+use Detail\Blitline\Job\Source\AwsS3Source;
 
 $config = require 'bootstrap.php';
 
@@ -39,7 +39,7 @@ $jobBuilder->setDefaultOption(
 
 $job = $jobBuilder->createJob()
     ->setSource(
-        new UrlSource($imageUrl)
+        AwsS3Source::fromUrl($imageUrl)
     )->addFunction(
         $jobBuilder->createFunction()
             ->setName('resize_to_fit')

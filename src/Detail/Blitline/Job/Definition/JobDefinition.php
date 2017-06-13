@@ -15,7 +15,7 @@ class JobDefinition extends BaseDefinition implements JobDefinitionInterface
      * @var array
      */
     protected $options = array(
-        self::OPTION_VERSION   => '1.21',
+        self::OPTION_VERSION   => '1.22',
         self::OPTION_FUNCTIONS => array(),
     );
 
