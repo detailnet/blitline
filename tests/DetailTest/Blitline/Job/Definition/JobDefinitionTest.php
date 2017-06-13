@@ -4,7 +4,6 @@ namespace DetailTest\Blitline\Job\Definition;
 
 use Detail\Blitline\Job\Definition\FunctionDefinition;
 use Detail\Blitline\Job\Definition\JobDefinition;
-use Detail\Blitline\Job\Source;
 
 class JobDefinitionTest extends DefinitionTestCase
 {
@@ -16,20 +15,18 @@ class JobDefinitionTest extends DefinitionTestCase
         return JobDefinition::CLASS;
     }
 
+
     public function testSourceCanBeSet()
     {
         $definition = $this->getDefinition();
-        $src = new Source\AwsS3Source(
-            'curzio-della-santa',
-            'test-files/Desert.jpg'
-        );
+        $url = 'http://www.detailnet.ch/image.jpg';
 
-        $this->setMethodReturnValue($definition, 'getOption', $src);
+        $this->setMethodReturnValue($definition, 'getOption', $url);
 
         /** @var JobDefinition $definition */
 
-        $this->assertEquals($definition, $definition->setSource($src));
-        $this->assertEquals($src, $definition->getSource());
+        $this->assertEquals($definition, $definition->setSource($url));
+        $this->assertEquals($url, $definition->getSource());
     }
 
     public function testPostbackUrlCanBeSet()
