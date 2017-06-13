@@ -6,11 +6,7 @@ use Detail\Blitline\Job\Source\AwsS3Source;
 $config = require 'bootstrap.php';
 
 $imageUrl = isset($_GET['image_url']) ? $_GET['image_url'] : null;
-
-if (!$imageUrl) {
-    throw new RuntimeException('Missing or invalid parameter "image_url"');
-}
-
+$imageKey = isset($_GET['image_key']) ? $_GET['image_key'] : null;
 $getConfig = function($optionName) use ($config) {
     if (!isset($config[$optionName])) {
         throw new RuntimeException(sprintf('Missing configuration option "%s"', $optionName));
@@ -20,9 +16,6 @@ $getConfig = function($optionName) use ($config) {
 };
 
 $imageSize = isset($_GET['image_size']) ? $_GET['image_size'] : 200;
-$image = new SplFileInfo($imageUrl);
-$imageName = $image->getBasename();
-
 $blitline = BlitlineClient::factory($config);
 
 /** @var \Detail\Blitline\Job\JobBuilder $jobBuilder */
@@ -32,15 +25,27 @@ $jobBuilder->setDefaultOption(
     array(
         's3_destination' => array(
             'bucket' => $getConfig('s3bucket'),
-//            'key' => $getConfig('s3prefix') . '/' . $imageName . '-' . $imageSize . '_blitline.jpg',
         ),
     )
 );
 
+if ($imageUrl !== null) {
+    $image = new SplFileInfo($imageUrl);
+    $source = $imageUrl;
+} else if ($imageKey !== null) {
+    $image = new SplFileInfo($imageKey);
+    $source = $jobBuilder->createSource()
+        ->setBucket($getConfig('s3bucket'))
+        ->setKey($imageKey);
+} else {
+    throw new RuntimeException('Missing parameter "image_url" or "image_key" (only one can be set)');
+}
+
+$imageName = $image->getBasename();
+
 $job = $jobBuilder->createJob()
-    ->setSource(
-        AwsS3Source::fromUrl($imageUrl)
-    )->addFunction(
+    ->setSource($source)
+    ->addFunction(
         $jobBuilder->createFunction()
             ->setName('resize_to_fit')
             ->setParams(
