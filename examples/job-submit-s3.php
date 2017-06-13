@@ -38,11 +38,9 @@ $jobBuilder->setDefaultOption(
 
 $job = $jobBuilder->createJob()
     ->setSource(
-        new AwsS3Source(
-            $getConfig('s3bucket'),
-            $imageKey,
-            'eu-west-1'
-        )
+        $jobBuilder->createSource()
+            ->setBucket($getConfig('s3bucket'))
+            ->setKey($imageKey)
     )->addFunction(
         $jobBuilder->createFunction()
             ->setName('resize_to_fit')
