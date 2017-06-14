@@ -2,8 +2,6 @@
 
 namespace Detail\Blitline\Response;
 
-use Detail\Blitline\Exception;
-
 class JobProcessed extends JobResponse
 {
     /**

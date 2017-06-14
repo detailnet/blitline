@@ -2,53 +2,50 @@
 
 namespace Detail\Blitline\Job\Definition;
 
-use Detail\Blitline\Job\Source;
-
 class JobDefinition extends BaseDefinition implements JobDefinitionInterface
 {
     const OPTION_SOURCE       = 'src';
     const OPTION_POSTBACK_URL = 'postback_url';
     const OPTION_VERSION      = 'v';
     const OPTION_FUNCTIONS    = 'functions';
+    const OPTION_SOURCE_TYPE  = 'src_type';
+    const OPTION_SOURCE_DATA  = 'src_data';
 
     /**
      * @var array
      */
     protected $options = array(
-        self::OPTION_VERSION   => '1.21',
+        self::OPTION_VERSION   => '1.22',
         self::OPTION_FUNCTIONS => array(),
     );
 
     /**
      * @inheritdoc
      */
-    public function setSourceUrl($url)
+    public function setSource($src)
     {
-        // Try to set an AWS S3 source first, to allow private access to objects
-        try {
-            $src = Source\AwsS3Source::fromUrl($url);
-        } catch (\Exception $e) {
-            $src = new Source\UrlSource($url);
+        $this->setOption(self::OPTION_SOURCE, $src);
+
+        $path = null;
+
+        if ($src instanceof SourceDefinition) {
+            $path = $src->getKey();
+        } elseif (is_string($src)) {
+            $path = parse_url($src, PHP_URL_PATH);
         }
 
-        $this->setOption(self::OPTION_SOURCE, $src);
-        return $this;
-    }
+        // If source is a PDF add specific conversion parameters to process only first page and avoid color loss
+        if ($path && ('pdf' === strtolower(pathinfo($path, PATHINFO_EXTENSION)))) {
+            $this->setSourceType('pdf_one_page');
+            $this->setSourceData(
+                array(
+                    'page' => 1,
+                    'colorspace' => 'rgb',
+                    'dpi' => 300,
+                )
+            );
+        }
 
-    /**
-     * @inheritdoc
-     */
-    public function getSourceUrl()
-    {
-        return $this->getOption(self::OPTION_SOURCE)->getUrl();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setSource(SourceInterface $src)
-    {
-        $this->setOption(self::OPTION_SOURCE, $src);
         return $this;
     }
 
@@ -58,6 +55,42 @@ class JobDefinition extends BaseDefinition implements JobDefinitionInterface
     public function getSource()
     {
         return $this->getOption(self::OPTION_SOURCE);
+    }
+
+    /**
+     * @param string $sourceType
+     * @return JobDefinitionInterface
+     */
+    public function setSourceType($sourceType)
+    {
+        $this->setOption(self::OPTION_SOURCE_TYPE, $sourceType);
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSourceType()
+    {
+        return $this->getOption(self::OPTION_SOURCE_TYPE);
+    }
+
+    /**
+     * @param array $sourceData
+     * @return JobDefinitionInterface
+     */
+    public function setSourceData($sourceData)
+    {
+        $this->setOption(self::OPTION_SOURCE_DATA, $sourceData);
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSourceData()
+    {
+        return $this->getOption(self::OPTION_SOURCE_DATA);
     }
 
     /**

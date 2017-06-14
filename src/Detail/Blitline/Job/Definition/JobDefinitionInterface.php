@@ -5,26 +5,13 @@ namespace Detail\Blitline\Job\Definition;
 interface JobDefinitionInterface extends DefinitionInterface
 {
     /**
-     * @param string $url
-     * @return JobDefinitionInterface
-     * @deprecated Will be removed in future versions, use 'setSource' instead
-     */
-    public function setSourceUrl($url);
-
-    /**
-     * @return string
-     * @deprecated Will be removed in future versions, use 'getSource' instead
-     */
-    public function getSourceUrl();
-
-    /**
-     * @param SourceInterface $src
+     * @param string|SourceDefinitionInterface $src
      * @return JobDefinitionInterface
      */
-    public function setSource(SourceInterface $src);
+    public function setSource($src);
 
     /**
-     * @return SourceInterface
+     * @return string|SourceDefinitionInterface
      */
     public function getSource();
 

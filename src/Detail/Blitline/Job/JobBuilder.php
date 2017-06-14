@@ -15,6 +15,11 @@ class JobBuilder implements
     /**
      * @var string
      */
+    protected $sourceClass = Definition\SourceDefinition::CLASS;
+
+    /**
+     * @var string
+     */
     protected $functionClass = Definition\FunctionDefinition::CLASS;
 
     /**
@@ -37,6 +42,24 @@ class JobBuilder implements
     public function setJobClass($jobClass)
     {
         $this->jobClass = $jobClass;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSourceClass()
+    {
+        return $this->sourceClass;
+    }
+
+    /**
+     * @param string $sourceClass
+     * @return JobBuilder
+     */
+    public function setSourceClass($sourceClass)
+    {
+        $this->sourceClass = $sourceClass;
         return $this;
     }
 
@@ -140,6 +163,17 @@ class JobBuilder implements
         return $this->createDefinition(
             $this->getJobClass(),
             Definition\JobDefinitionInterface::CLASS
+        );
+    }
+
+    /**
+     * @return Definition\SourceDefinitionInterface
+     */
+    public function createSource()
+    {
+        return $this->createDefinition(
+            $this->getSourceClass(),
+            Definition\SourceDefinitionInterface::CLASS
         );
     }
 

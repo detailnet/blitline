@@ -1,7 +1,6 @@
 <?php
 
 use Detail\Blitline\Client\BlitlineClient;
-use Detail\Blitline\Job\Source\UrlSource;
 
 $config = require 'bootstrap.php';
 
@@ -32,15 +31,13 @@ $jobBuilder->setDefaultOption(
     array(
         's3_destination' => array(
             'bucket' => $getConfig('s3bucket'),
-//            'key' => $getConfig('s3prefix') . '/' . $imageName . '-' . $imageSize . '_blitline.jpg',
         ),
     )
 );
 
 $job = $jobBuilder->createJob()
-    ->setSource(
-        new UrlSource($imageUrl)
-    )->addFunction(
+    ->setSource($imageUrl)
+    ->addFunction(
         $jobBuilder->createFunction()
             ->setName('resize_to_fit')
             ->setParams(
