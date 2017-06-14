@@ -13,7 +13,7 @@ class SourceDefinition extends BaseDefinition implements
      * @var array
      */
     protected $options = array(
-        self::OPTION_NAME   => 's3',
+        self::OPTION_NAME => 's3',
     );
 
     /**

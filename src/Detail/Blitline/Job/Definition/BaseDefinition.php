@@ -87,7 +87,7 @@ abstract class BaseDefinition
                 $value = new ArrayObject($value);
             }
 
-            // Apply changes value
+            // Apply changed value
             if ($value != $dataIterator->current()) {
                 /** @var RecursiveArrayIterator $innerIterator */
                 $innerIterator = $dataIterator->getInnerIterator();

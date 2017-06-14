@@ -7,7 +7,7 @@ use Detail\Blitline\Job\Definition\SourceDefinition;
 class SourceDefinitionTest extends DefinitionTestCase
 {
     /**
-     * @return mixed
+     * @return string
      */
     protected function getDefinitionClass()
     {

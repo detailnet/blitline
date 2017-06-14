@@ -30,12 +30,12 @@ class JobDefinition extends BaseDefinition implements JobDefinitionInterface
 
         if ($src instanceof SourceDefinition) {
             $path = $src->getKey();
-        } elseif (is_string($src) && (parse_url($src) !== false)) {
+        } elseif (is_string($src)) {
             $path = parse_url($src, PHP_URL_PATH);
         }
 
         // If source is a PDF add specific conversion parameters to process only first page and avoid color loss
-        if ($path !== null && ('pdf' === strtolower(pathinfo($path, PATHINFO_EXTENSION)))) {
+        if ($path && ('pdf' === strtolower(pathinfo($path, PATHINFO_EXTENSION)))) {
             $this->setSourceType('pdf_one_page');
             $this->setSourceData(
                 array(

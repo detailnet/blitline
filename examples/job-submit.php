@@ -31,7 +31,6 @@ $jobBuilder->setDefaultOption(
     array(
         's3_destination' => array(
             'bucket' => $getConfig('s3bucket'),
-//            'key' => $getConfig('s3prefix') . '/' . $imageName . '-' . $imageSize . '_blitline.jpg',
         ),
     )
 );

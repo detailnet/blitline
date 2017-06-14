@@ -15,7 +15,6 @@ class JobDefinitionTest extends DefinitionTestCase
         return JobDefinition::CLASS;
     }
 
-
     public function testSourceCanBeSet()
     {
         $definition = $this->getDefinition();
@@ -27,6 +26,35 @@ class JobDefinitionTest extends DefinitionTestCase
 
         $this->assertEquals($definition, $definition->setSource($url));
         $this->assertEquals($url, $definition->getSource());
+    }
+
+    public function testSourceTypeCanBeSet()
+    {
+        $definition = $this->getDefinition();
+        $type = 'http://www.detailnet.ch/image.jpg';
+
+        $this->setMethodReturnValue($definition, 'getOption', $type);
+
+        /** @var JobDefinition $definition */
+
+        $this->assertEquals($definition, $definition->setSourceType($type));
+        $this->assertEquals($type, $definition->getSourceType());
+    }
+
+    public function testSourceDataCanBeSet()
+    {
+        $definition = $this->getDefinition();
+        $data = array(
+            'colorspace' => 'rgb',
+            'dpi' => 300,
+        );
+
+        $this->setMethodReturnValue($definition, 'getOption', $data);
+
+        /** @var JobDefinition $definition */
+
+        $this->assertEquals($definition, $definition->setSourceData($data));
+        $this->assertEquals($data, $definition->getSourceData());
     }
 
     public function testPostbackUrlCanBeSet()

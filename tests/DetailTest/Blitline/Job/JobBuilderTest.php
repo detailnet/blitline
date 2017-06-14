@@ -98,6 +98,20 @@ class JobBuilderTest extends TestCase
         $this->assertEquals($class, $this->jobBuilder->getJobClass());
     }
 
+    public function testSourceClassCanBeSet()
+    {
+        $this->assertEquals(
+            Definition\SourceDefinition::CLASS,
+            $this->jobBuilder->getSourceClass()
+        );
+
+        $class = 'CustomSourceDefinitionClass';
+
+        $this->jobBuilder->setSourceClass($class);
+
+        $this->assertEquals($class, $this->jobBuilder->getSourceClass());
+    }
+
     public function testFunctionClassCanBeSet()
     {
         $this->assertEquals(
@@ -147,11 +161,18 @@ class JobBuilderTest extends TestCase
         $this->assertInstanceOf(Definition\JobDefinition::CLASS, $job);
     }
 
+    public function testCanCreateSourceDefinition()
+    {
+        $source = $this->jobBuilder->createSource();
+
+        $this->assertInstanceOf(Definition\SourceDefinition::CLASS, $source);
+    }
+
     public function testCanCreateFunctionDefinition()
     {
-        $job = $this->jobBuilder->createFunction();
+        $function = $this->jobBuilder->createFunction();
 
-        $this->assertInstanceOf(Definition\FunctionDefinition::CLASS, $job);
+        $this->assertInstanceOf(Definition\FunctionDefinition::CLASS, $function);
     }
 
     public function testDefinitionCreationWithMissingClassThrowsException()
