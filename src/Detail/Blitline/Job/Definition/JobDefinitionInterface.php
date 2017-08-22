@@ -38,6 +38,17 @@ interface JobDefinitionInterface extends DefinitionInterface
     public function getVersion();
 
     /**
+     * @param array $preProcess
+     * @return JobDefinitionInterface
+     */
+    public function setPreProcess(array $preProcess);
+
+    /**
+     * @return array
+     */
+    public function getPreProcess();
+
+    /**
      * @param array|FunctionDefinitionInterface[] $functions
      * @return JobDefinitionInterface
      */

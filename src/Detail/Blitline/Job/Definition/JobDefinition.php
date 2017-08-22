@@ -7,6 +7,7 @@ class JobDefinition extends BaseDefinition implements JobDefinitionInterface
     const OPTION_SOURCE       = 'src';
     const OPTION_POSTBACK_URL = 'postback_url';
     const OPTION_VERSION      = 'v';
+    const OPTION_PRE_PROCESS  = 'pre_process';
     const OPTION_FUNCTIONS    = 'functions';
     const OPTION_SOURCE_TYPE  = 'src_type';
     const OPTION_SOURCE_DATA  = 'src_data';
@@ -32,18 +33,6 @@ class JobDefinition extends BaseDefinition implements JobDefinitionInterface
             $path = $src->getKey();
         } elseif (is_string($src)) {
             $path = parse_url($src, PHP_URL_PATH);
-        }
-
-        // If source is a PDF add specific conversion parameters to process only first page and avoid color loss
-        if ($path && ('pdf' === strtolower(pathinfo($path, PATHINFO_EXTENSION)))) {
-            $this->setSourceType('pdf_one_page');
-            $this->setSourceData(
-                array(
-                    'page' => 1,
-                    'colorspace' => 'rgb',
-                    'dpi' => 300,
-                )
-            );
         }
 
         return $this;
@@ -126,6 +115,24 @@ class JobDefinition extends BaseDefinition implements JobDefinitionInterface
     public function getVersion()
     {
         return $this->getOption(self::OPTION_VERSION);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setPreProcess(array $preProcess)
+    {
+        /** @todo Check that array contains valid preProcess */
+        $this->setOption(self::OPTION_PRE_PROCESS, $preProcess);
+        return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getPreProcess()
+    {
+        return $this->getOption(self::OPTION_PRE_PROCESS);
     }
 
     /**
