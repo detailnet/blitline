@@ -1,6 +1,6 @@
 <?php
 
-use Detail\Blitline\Response;
+use Detail\Blitline\Client\Response;
 
 return [
     'name'        => 'Blitline',

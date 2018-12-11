@@ -27,13 +27,13 @@ class JobDefinition extends BaseDefinition implements JobDefinitionInterface
     {
         $this->setOption(self::OPTION_SOURCE, $src);
 
-        $path = null;
-
-        if ($src instanceof SourceDefinition) {
-            $path = $src->getKey();
-        } elseif (is_string($src)) {
-            $path = parse_url($src, PHP_URL_PATH);
-        }
+//        $path = null;
+//
+//        if ($src instanceof SourceDefinition) {
+//            $path = $src->getKey();
+//        } elseif (is_string($src)) {
+//            $path = parse_url($src, PHP_URL_PATH);
+//        }
 
         return $this;
     }

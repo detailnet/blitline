@@ -45,7 +45,7 @@ class BlitlineClientTest extends TestCase
     }
 
     /**
-     * @expectedException \Detail\Blitline\Exception\InvalidArgumentException
+     * @expectedException \Detail\Blitline\Exception\RuntimeException
      */
     public function testFactoryThrowsExceptionOnMissingConfigurationOptions()
     {
@@ -55,7 +55,7 @@ class BlitlineClientTest extends TestCase
     }
 
     /**
-     * @expectedException \Detail\Blitline\Exception\InvalidArgumentException
+     * @expectedException \Detail\Blitline\Exception\RuntimeException
      */
     public function testFactoryThrowsExceptionOnBlankConfigurationOptions()
     {

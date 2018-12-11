@@ -14,4 +14,4 @@ $blitline = BlitlineClient::factory($config);
 
 $response = $blitline->pollJob(['job_id' => $jobId]);
 
-var_dump($response->getResult());
+var_dump($response->toArray());

@@ -64,4 +64,15 @@ if (isset($config['version'])) {
 
 $response = $blitline->submitJob($job);
 
-var_dump($response->getResult());
+if ($response->hasErrors()) {
+    var_dump($response->getErrors());
+} else {
+    var_dump(
+        [
+            'job_id' => $response->getJobId(),
+            'images' => $response->getImages(),
+        ]
+    );
+}
+
+

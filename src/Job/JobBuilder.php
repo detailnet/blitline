@@ -160,10 +160,13 @@ class JobBuilder implements
      */
     public function createJob()
     {
-        return $this->createDefinition(
+        /** @var Definition\JobDefinitionInterface $definition */
+        $definition = $this->createDefinition(
             $this->getJobClass(),
             Definition\JobDefinitionInterface::CLASS
         );
+
+        return $definition;
     }
 
     /**
@@ -171,10 +174,13 @@ class JobBuilder implements
      */
     public function createSource()
     {
-        return $this->createDefinition(
+        /** @var Definition\SourceDefinitionInterface $definition */
+        $definition = $this->createDefinition(
             $this->getSourceClass(),
             Definition\SourceDefinitionInterface::CLASS
         );
+
+        return $definition;
     }
 
     /**
@@ -182,10 +188,13 @@ class JobBuilder implements
      */
     public function createFunction()
     {
-        return $this->createDefinition(
+        /** @var Definition\FunctionDefinitionInterface $definition */
+        $definition = $this->createDefinition(
             $this->getFunctionClass(),
             Definition\FunctionDefinitionInterface::CLASS
         );
+
+        return $definition;
     }
 
     /**

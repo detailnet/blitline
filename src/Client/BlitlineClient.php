@@ -3,39 +3,39 @@
 namespace Detail\Blitline\Client;
 
 use GuzzleHttp\Client as HttpClient;
-use GuzzleHttp\ClientInterface as HttpClientInterface;
+//use GuzzleHttp\ClientInterface as HttpClientInterface;
 use GuzzleHttp\Command\Guzzle\Description as ServiceDescription;
-use GuzzleHttp\Command\Guzzle\DescriptionInterface as ServiceDescriptionInterface;
+//use GuzzleHttp\Command\Guzzle\DescriptionInterface as ServiceDescriptionInterface;
 use GuzzleHttp\Command\Guzzle\GuzzleClient as ServiceClient;
 
-use Detail\Blitline\Client\Subscriber;
+use Detail\Blitline\Client\Response;
+//use Detail\Blitline\Client\Subscriber;
 use Detail\Blitline\Exception;
 use Detail\Blitline\Job\Definition\DefinitionInterface;
 use Detail\Blitline\Job\JobBuilder;
 use Detail\Blitline\Job\JobBuilderInterface;
-use Detail\Blitline\Response;
 
 /**
- * Blitline API client.
+ * Blitline API client
  *
  * @method Response\JobProcessed pollJob(array $params = [])
  * @method Response\JobSubmitted submitJob(mixed $job = [])
  */
 class BlitlineClient extends ServiceClient
 {
-    const CLIENT_VERSION = '0.7.0';
+    const CLIENT_VERSION = '1.0.0';
 
     /**
      * @var JobBuilderInterface
      */
-    protected $jobBuilder;
+    private $jobBuilder;
 
     /**
      * @param array $options
      * @param JobBuilderInterface $jobBuilder
      * @return BlitlineClient
      */
-    public static function factory($options = [], JobBuilderInterface $jobBuilder = null)
+    public static function factory($options = [], ?JobBuilderInterface $jobBuilder = null)
     {
         $requiredOptions = [
             'application_id',
@@ -43,83 +43,83 @@ class BlitlineClient extends ServiceClient
 
         foreach ($requiredOptions as $optionName) {
             if (!isset($options[$optionName]) || $options[$optionName] === '') {
-                throw new Exception\InvalidArgumentException(
+                throw new Exception\RuntimeException(
                     sprintf('Missing required configuration option "%s"', $optionName)
                 );
             }
         }
 
         $defaultOptions = [
-            'base_url' => 'https://api.blitline.com/',
-            'defaults' => [
-                // Float describing the number of seconds to wait while trying to connect to a server.
-                // 0 was the default (wait indefinitely).
-                'connect_timeout' => 10,
-                // Float describing the timeout of the request in seconds.
-                // 0 was the default (wait indefinitely).
-                'timeout' => 60, // 60 seconds, may be overridden by individual operations
-            ],
+            'base_uri' => 'https://api.blitline.com/',
+            // Float describing the number of seconds to wait while trying to connect to a server.
+            // 0 was the default (wait indefinitely).
+            'connect_timeout' => 10,
+            // Float describing the timeout of the request in seconds.
+            // 0 was the default (wait indefinitely).
+            'timeout' => 60, // 60 seconds, may be overridden by individual operations
         ];
 
         // These are always applied
         $overrideOptions = [
-            'defaults' => [
-                // We're using our own error handler
-                // (this disables the use of the internal HttpError subscriber)
-                'exceptions' => false,
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'User-Agent' => 'detailnet-blitline/' . self::CLIENT_VERSION,
-                ],
-                'query' => [
-                    'application_id' => $options['application_id'],
-                ]
+            // We're using our own error handling middleware,
+            // so disable throwing exceptions on HTTP protocol errors (i.e., 4xx and 5xx responses).
+            'http_errors' => false,
+            'headers' => [
+                'Accept' => 'application/json',
+                'User-Agent' => 'detailnet-blitline/' . self::CLIENT_VERSION,
             ],
+            'query' => [
+                'application_id' => $options['application_id'],
+            ]
         ];
 
         // Apply options
         $config = array_replace_recursive($defaultOptions, $options, $overrideOptions);
 
         $httpClient = new HttpClient($config);
-        $httpClient->getEmitter()->attach(new Subscriber\Http\ProcessError());
+//        $httpClient->getEmitter()->attach(new Subscriber\Http\ProcessError());
 
         $description = new ServiceDescription(require __DIR__ . '/ServiceDescription/Blitline.php');
-        $client = new static($httpClient, $description, $jobBuilder);
+        $deserializer = new Deserializer($description);
+        $client = new static($httpClient, $description, null, $deserializer);
+
+        if ($jobBuilder !== null) {
+            $client->setJobBuilder($jobBuilder);
+        }
 
         return $client;
     }
 
-    /**
-     * @param HttpClientInterface $client
-     * @param ServiceDescriptionInterface $description
-     * @param JobBuilderInterface $jobBuilder
-     */
-    public function __construct(
-        HttpClientInterface $client,
-        ServiceDescriptionInterface $description,
-        JobBuilderInterface $jobBuilder = null
-    ) {
-        $config = [
-            'process' => false, // Don't use Guzzle Service's processing (we're rolling our own...)
-        ];
-
-        parent::__construct($client, $description, $config);
-
-        if ($jobBuilder !== null) {
-            $this->setJobBuilder($jobBuilder);
-        }
-
-        $emitter = $this->getEmitter();
-        $emitter->attach(new Subscriber\Command\PrepareRequest($description));
-        $emitter->attach(new Subscriber\Command\ProcessResponse($description));
-    }
+//    /**
+//     * @param HttpClientInterface $client
+//     * @param ServiceDescriptionInterface $description
+//     * @param JobBuilderInterface $jobBuilder
+//     */
+//    public function __construct(
+//        HttpClientInterface $client,
+//        ServiceDescriptionInterface $description
+//    ) {
+//        $config = [
+//            'process' => false, // Don't use Guzzle Service's processing (we're rolling our own...)
+//        ];
+//
+//        parent::__construct($client, $description, $config);
+//
+//        if ($jobBuilder !== null) {
+//            $this->setJobBuilder($jobBuilder);
+//        }
+//
+//        $emitter = $this->getEmitter();
+//        $emitter->attach(new Subscriber\Command\PrepareRequest($description));
+//        $emitter->attach(new Subscriber\Command\ProcessResponse($description));
+//    }
 
     /**
      * @return string
      */
     public function getBlitlineApplicationId()
     {
-        return $this->getHttpClient()->getDefaultOption('query')['application_id'];
+        return $this->getHttpClient()->getConfig('query')['application_id'];
     }
 
     /**
@@ -127,7 +127,7 @@ class BlitlineClient extends ServiceClient
      */
     public function getBlitlineUrl()
     {
-        return $this->getHttpClient()->getBaseUrl();
+        return $this->getHttpClient()->getConfig('base_uri');
     }
 
     /**
@@ -144,12 +144,10 @@ class BlitlineClient extends ServiceClient
 
     /**
      * @param JobBuilderInterface $jobBuilder
-     * @return BlitlineClient
      */
     public function setJobBuilder(JobBuilderInterface $jobBuilder)
     {
         $this->jobBuilder = $jobBuilder;
-        return $this;
     }
 
     /**
@@ -165,12 +163,6 @@ class BlitlineClient extends ServiceClient
             $args[0] = $definition->toArray();
         }
 
-        // It seems we can't intercept Guzzle's request exceptions through the event system...
-        // e.g. when http://api.blitline.com/ is unreachable or the request times out.
-        try {
-            return parent::__call($method, $args);
-        } catch (\Exception $e) {
-            throw Exception\OperationException::wrapException($e);
-        }
+        return parent::__call($method, $args);
     }
 }
