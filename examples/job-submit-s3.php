@@ -28,11 +28,11 @@ $blitline = BlitlineClient::factory($config);
 $jobBuilder = $blitline->getJobBuilder();
 $jobBuilder->setDefaultOption(
     'function.save',
-    array(
-        's3_destination' => array(
+    [
+        's3_destination' => [
             'bucket' => $getConfig('s3bucket'),
-        ),
-    )
+        ],
+    ]
 );
 
 $job = $jobBuilder->createJob()
@@ -44,20 +44,20 @@ $job = $jobBuilder->createJob()
         $jobBuilder->createFunction()
             ->setName('resize_to_fit')
             ->setParams(
-                array(
+                [
                     'width' => $imageSize,
                     'height' => $imageSize,
                     'only_shrink_larger' => true, // Don't upscale image
-                )
+                ]
             )
             ->setSaveOptions(
-                array(
+                [
                     'image_identifier' => $imageName,
-                    's3_destination' => array(
+                    's3_destination' => [
 //                        'bucket' => $getConfig('s3bucket'),
                         'key' => $getConfig('s3prefix') . '/' . $imageName . '-' . $imageSize . '_blitline.jpg',
-                    ),
-                )
+                    ],
+                ]
             )
     );
 

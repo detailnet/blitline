@@ -12,6 +12,6 @@ if (!$jobId) {
 
 $blitline = BlitlineClient::factory($config);
 
-$response = $blitline->pollJob(array('job_id' => $jobId));
+$response = $blitline->pollJob(['job_id' => $jobId]);
 
 var_dump($response->getResult());
