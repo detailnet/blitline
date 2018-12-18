@@ -1,6 +1,6 @@
 <?php
 
-namespace Detail\Blitline\Client\Response;
+namespace Detail\Blitline\Response;
 
 use GuzzleHttp\Command\Guzzle\Operation;
 use GuzzleHttp\Psr7\Response as PsrResponse;

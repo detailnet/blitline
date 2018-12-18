@@ -1,13 +1,12 @@
 <?php
 
-namespace DetailTest\Blitline\Client;
+namespace DetailTest\Blitline;
 
 use PHPUnit\Framework\TestCase;
 
 use GuzzleHttp\Command\Command;
-use GuzzleHttp\Command\Exception\CommandException;
 
-use Detail\Blitline\Client\BlitlineClient;
+use Detail\Blitline\BlitlineClient;
 use Detail\Blitline\Exception;
 use Detail\Blitline\Job\Definition\JobDefinition;
 use Detail\Blitline\Job\JobBuilder;
@@ -35,7 +34,7 @@ class BlitlineClientTest extends TestCase
 
         $client = BlitlineClient::factory($config, $jobBuilder);
 
-        $this->assertInstanceOf('Detail\Blitline\Client\BlitlineClient', $client);
+        $this->assertInstanceOf(BlitlineClient::CLASS, $client);
         $this->assertEquals($config['application_id'], $client->getBlitlineApplicationId());
         $this->assertEquals('https://api.blitline.com/', $client->getBlitlineUrl());
         $this->assertEquals($jobBuilder, $client->getJobBuilder());

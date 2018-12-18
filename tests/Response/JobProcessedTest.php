@@ -1,9 +1,9 @@
 <?php
 
-namespace DetailTest\Blitline\Client\Response;
+namespace DetailTest\Blitline\Response;
 
 use Detail\Blitline\Exception;
-use Detail\Blitline\Client\Response\JobProcessed;
+use Detail\Blitline\Response\JobProcessed;
 
 class JobProcessedTest extends ResponseTestCase
 {

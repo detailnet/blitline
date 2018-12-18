@@ -1,6 +1,6 @@
 <?php
 
-namespace Detail\Blitline\Client\Response;
+namespace Detail\Blitline\Response;
 
 class JobSubmitted extends JobResponse
 {

@@ -1,13 +1,12 @@
 <?php
 
-namespace DetailTest\Blitline\Client\Response;
+namespace DetailTest\Blitline\Response;
 
 use PHPUnit\Framework\TestCase;
 
 use GuzzleHttp\Psr7\Response as PsrResponse;
-//use function GuzzleHttp\Psr7\stream_for;
 
-use Detail\Blitline\Client\Response\Response;
+use Detail\Blitline\Response\Response;
 
 abstract class ResponseTestCase extends TestCase
 {

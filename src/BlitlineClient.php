@@ -1,17 +1,12 @@
 <?php
 
-namespace Detail\Blitline\Client;
+namespace Detail\Blitline;
 
 use GuzzleHttp\Client as HttpClient;
-//use GuzzleHttp\ClientInterface as HttpClientInterface;
 use GuzzleHttp\Command\CommandInterface;
 use GuzzleHttp\Command\Guzzle\Description as ServiceDescription;
-//use GuzzleHttp\Command\Guzzle\DescriptionInterface as ServiceDescriptionInterface;
 use GuzzleHttp\Command\Guzzle\GuzzleClient as ServiceClient;
 
-use Detail\Blitline\Client\Response;
-//use Detail\Blitline\Client\Subscriber;
-use Detail\Blitline\Exception;
 use Detail\Blitline\Job\Definition\DefinitionInterface;
 use Detail\Blitline\Job\JobBuilder;
 use Detail\Blitline\Job\JobBuilderInterface;

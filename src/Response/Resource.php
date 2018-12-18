@@ -1,6 +1,6 @@
 <?php
 
-namespace Detail\Blitline\Client\Response;
+namespace Detail\Blitline\Response;
 
 use JmesPath\Env as JmesPath;
 

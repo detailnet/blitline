@@ -1,13 +1,13 @@
 <?php
 
-namespace Detail\Blitline\Client\Response;
+namespace Detail\Blitline\Response;
 
 use ArrayIterator;
 
 use GuzzleHttp\Command\Guzzle\Operation;
 use GuzzleHttp\Psr7\Response as PsrResponse;
 
-use Detail\Blitline\Client\Response\Resource as ClientResource;
+use Detail\Blitline\Response\Resource as ClientResource;
 use Detail\Blitline\Exception;
 
 class ListResponse extends BaseResponse implements

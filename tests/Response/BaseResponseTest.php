@@ -1,8 +1,8 @@
 <?php
 
-namespace DetailTest\Blitline\Client\Response;
+namespace DetailTest\Blitline\Response;
 
-use Detail\Blitline\Client\Response\BaseResponse;
+use Detail\Blitline\Response\BaseResponse;
 
 class BaseResponseTest extends ResponseTestCase
 {

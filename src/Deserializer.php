@@ -1,6 +1,6 @@
 <?php
 
-namespace Detail\Blitline\Client;
+namespace Detail\Blitline;
 
 use GuzzleHttp\Command\CommandInterface;
 use GuzzleHttp\Command\Guzzle\DescriptionInterface as ServiceDescription;
@@ -8,8 +8,7 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request as PsrRequest;
 use GuzzleHttp\Psr7\Response as PsrResponse;
 
-use Detail\Blitline\Client\Response\Response;
-use Detail\Blitline\Exception;
+use Detail\Blitline\Response\Response;
 
 class Deserializer
 {
