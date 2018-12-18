@@ -10,7 +10,7 @@ if (!$imageKey) {
     throw new RuntimeException('Missing or invalid parameter "image_key"');
 }
 
-$getConfig = function($optionName) use ($config) {
+$getConfig = function ($optionName) use ($config) {
     if (!isset($config[$optionName])) {
         throw new RuntimeException(sprintf('Missing configuration option "%s"', $optionName));
     }
@@ -54,7 +54,7 @@ $job = $jobBuilder->createJob()
                 [
                     'image_identifier' => $imageName,
                     's3_destination' => [
-//                        'bucket' => $getConfig('s3bucket'),
+                        // 'bucket' => $getConfig('s3bucket'),
                         'key' => $getConfig('s3prefix') . '/' . $imageName . '-' . $imageSize . '_blitline.jpg',
                     ],
                 ]
