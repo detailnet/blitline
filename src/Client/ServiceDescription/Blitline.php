@@ -19,9 +19,9 @@ return [
                     'required'    => true,
                 ],
             ],
-            'responseClass' => Response\JobProcessed::CLASS,
+            'responseModel' => Response\JobProcessed::CLASS,
             'data' => [
-                'requestOptions' => ['timeout' => 60 * 10], // Wait 10 minutes for the completion of a job
+                'http' => ['timeout' => 60 * 10], // Wait 10 minutes for the completion of a job
             ],
         ],
         'submitJob' => [
@@ -52,7 +52,7 @@ return [
             'additionalParameters' => [
                 'location' => 'json',
             ],
-            'responseClass' => Response\JobSubmitted::CLASS,
+            'responseModel' => Response\JobSubmitted::CLASS,
         ],
     ],
 ];

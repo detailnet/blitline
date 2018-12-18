@@ -4,6 +4,7 @@ namespace Detail\Blitline\Client;
 
 use GuzzleHttp\Client as HttpClient;
 //use GuzzleHttp\ClientInterface as HttpClientInterface;
+use GuzzleHttp\Command\CommandInterface;
 use GuzzleHttp\Command\Guzzle\Description as ServiceDescription;
 //use GuzzleHttp\Command\Guzzle\DescriptionInterface as ServiceDescriptionInterface;
 use GuzzleHttp\Command\Guzzle\GuzzleClient as ServiceClient;
@@ -30,12 +31,7 @@ class BlitlineClient extends ServiceClient
      */
     private $jobBuilder;
 
-    /**
-     * @param array $options
-     * @param JobBuilderInterface $jobBuilder
-     * @return BlitlineClient
-     */
-    public static function factory($options = [], ?JobBuilderInterface $jobBuilder = null)
+    public static function factory(array $options = [], ?JobBuilderInterface $jobBuilder = null): BlitlineClient
     {
         $requiredOptions = [
             'application_id',
@@ -90,50 +86,17 @@ class BlitlineClient extends ServiceClient
         return $client;
     }
 
-//    /**
-//     * @param HttpClientInterface $client
-//     * @param ServiceDescriptionInterface $description
-//     * @param JobBuilderInterface $jobBuilder
-//     */
-//    public function __construct(
-//        HttpClientInterface $client,
-//        ServiceDescriptionInterface $description
-//    ) {
-//        $config = [
-//            'process' => false, // Don't use Guzzle Service's processing (we're rolling our own...)
-//        ];
-//
-//        parent::__construct($client, $description, $config);
-//
-//        if ($jobBuilder !== null) {
-//            $this->setJobBuilder($jobBuilder);
-//        }
-//
-//        $emitter = $this->getEmitter();
-//        $emitter->attach(new Subscriber\Command\PrepareRequest($description));
-//        $emitter->attach(new Subscriber\Command\ProcessResponse($description));
-//    }
-
-    /**
-     * @return string
-     */
-    public function getBlitlineApplicationId()
+    public function getBlitlineApplicationId(): ?string
     {
         return $this->getHttpClient()->getConfig('query')['application_id'];
     }
 
-    /**
-     * @return string
-     */
-    public function getBlitlineUrl()
+    public function getBlitlineUrl(): ?string
     {
         return $this->getHttpClient()->getConfig('base_uri');
     }
 
-    /**
-     * @return JobBuilderInterface
-     */
-    public function getJobBuilder()
+    public function getJobBuilder(): JobBuilderInterface
     {
         if ($this->jobBuilder === null) {
             $this->jobBuilder = new JobBuilder();
@@ -142,10 +105,7 @@ class BlitlineClient extends ServiceClient
         return $this->jobBuilder;
     }
 
-    /**
-     * @param JobBuilderInterface $jobBuilder
-     */
-    public function setJobBuilder(JobBuilderInterface $jobBuilder)
+    public function setJobBuilder(JobBuilderInterface $jobBuilder): void
     {
         $this->jobBuilder = $jobBuilder;
     }
@@ -164,5 +124,30 @@ class BlitlineClient extends ServiceClient
         }
 
         return parent::__call($method, $args);
+    }
+
+    /**
+     * @param string $name
+     * @param array $params
+     * @return CommandInterface
+     */
+    public function getCommand($name, array $params = [])
+    {
+        $command = parent::getCommand($name, $params);
+        $requestOptions = $this->getRequestOptions($command);
+
+        if ($requestOptions !== null) {
+            $command['@http'] = $requestOptions;
+        }
+
+        return $command;
+    }
+
+    private function getRequestOptions(CommandInterface $command): ?array
+    {
+        $operation = $this->getDescription()->getOperation($command->getName());
+        $requestOptions = $operation->getData('http');
+
+        return is_array($requestOptions) ? $requestOptions : null;
     }
 }
