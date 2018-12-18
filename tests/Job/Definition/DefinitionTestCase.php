@@ -4,8 +4,8 @@ namespace DetailTest\Blitline\Job\Definition;
 
 use RuntimeException;
 
-use PHPUnit_Framework_TestCase as TestCase;
-use PHPUnit_Framework_MockObject_MockObject as MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 
 abstract class DefinitionTestCase extends TestCase
 {
@@ -14,10 +14,7 @@ abstract class DefinitionTestCase extends TestCase
      */
     protected $definition;
 
-    /**
-     * @return string
-     */
-    abstract protected function getDefinitionClass();
+    abstract protected function getDefinitionClass(): string;
 
     protected function setUp()
     {
@@ -29,18 +26,14 @@ abstract class DefinitionTestCase extends TestCase
             );
         }
 
-        $this->definition = $this->getMock(
-            $definitionClass,
-            ['setOption', 'getOption']
-        );
+        $this->definition = $this->getMockBuilder($definitionClass)
+            ->setMethods(['setOption', 'getOption'])
+            ->getMock();
 
-        $this->setMethodReturnValue($this->definition, 'setOption');
+        $this->setMethodReturnValue($this->definition, 'setOption', $this->definition);
     }
 
-    /**
-     * @return MockObject
-     */
-    protected function getDefinition()
+    protected function getDefinition(): MockObject
     {
         return $this->definition;
     }
@@ -50,7 +43,7 @@ abstract class DefinitionTestCase extends TestCase
      * @param string $method
      * @param mixed $returnValue
      */
-    protected function setMethodReturnValue(MockObject $definition, $method, $returnValue = null)
+    protected function setMethodReturnValue(MockObject $definition, string $method, $returnValue = null): void
     {
         $definition
             ->expects($this->any())

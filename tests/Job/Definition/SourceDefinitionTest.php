@@ -6,15 +6,12 @@ use Detail\Blitline\Job\Definition\SourceDefinition;
 
 class SourceDefinitionTest extends DefinitionTestCase
 {
-    /**
-     * @return string
-     */
-    protected function getDefinitionClass()
+    protected function getDefinitionClass(): string
     {
         return SourceDefinition::CLASS;
     }
 
-    public function testNameCanBeSet()
+    public function testNameCanBeSet(): void
     {
         $definition = $this->getDefinition();
         $name = 's3';
@@ -27,7 +24,7 @@ class SourceDefinitionTest extends DefinitionTestCase
         $this->assertEquals($name, $definition->getName());
     }
 
-    public function testBucketCanBeSet()
+    public function testBucketCanBeSet(): void
     {
         $definition = $this->getDefinition();
         $bucket = 'my-bucket';
@@ -40,7 +37,7 @@ class SourceDefinitionTest extends DefinitionTestCase
         $this->assertEquals($bucket, $definition->getBucket());
     }
 
-    public function testKeyCanBeSet()
+    public function testKeyCanBeSet(): void
     {
         $definition = $this->getDefinition();
         $key = 'path-to-file/filename.ext';

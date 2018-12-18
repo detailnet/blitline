@@ -2,7 +2,7 @@
 
 namespace DetailTest\Blitline\Job\Definition;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 
 use Detail\Blitline\Job\Definition\BaseDefinition;
 
@@ -13,7 +13,7 @@ class BaseDefinitionTest extends TestCase
      */
     protected $definition;
 
-    public function provideOptions()
+    public function provideOptions(): array
     {
         $subDefinition = $this->getMockForAbstractClass(
             'Detail\Blitline\Job\Definition\BaseDefinition'
@@ -74,7 +74,7 @@ class BaseDefinitionTest extends TestCase
         ];
     }
 
-    public function provideOption()
+    public function provideOption(): array
     {
         return [
             [
@@ -117,7 +117,7 @@ class BaseDefinitionTest extends TestCase
      * @param array $expectedOptions
      * @dataProvider provideOptions
      */
-    public function testOptionsCanBeApplied(array $initialOptions, array $options, array $expectedOptions)
+    public function testOptionsCanBeApplied(array $initialOptions, array $options, array $expectedOptions): void
     {
         $this->assertEquals([], $this->definition->getOptions());
         $this->assertEquals($this->definition, $this->definition->setOptions($initialOptions));
@@ -134,7 +134,7 @@ class BaseDefinitionTest extends TestCase
      * @param mixed $expectedValue
      * @dataProvider provideOption
      */
-    public function testOptionCanBeSet($key, $defaultValue, $initialValue, $value, $expectedValue)
+    public function testOptionCanBeSet($key, $defaultValue, $initialValue, $value, $expectedValue): void
     {
         $this->assertNull($this->definition->getOption($key));
         $this->assertEquals($defaultValue, $this->definition->getOption($key, $defaultValue));

@@ -2,7 +2,7 @@
 
 namespace DetailTest\Blitline\Client;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 
 use GuzzleHttp\Command\Command;
 use GuzzleHttp\Command\Exception\CommandException;
@@ -14,10 +14,7 @@ use Detail\Blitline\Job\JobBuilder;
 
 class BlitlineClientTest extends TestCase
 {
-    /**
-     * @return array
-     */
-    public function provideConfigValues()
+    public function provideConfigValues(): array
     {
         return [
             ['random_application_id'],
@@ -25,10 +22,10 @@ class BlitlineClientTest extends TestCase
     }
 
     /**
-     * @param $applicationId
+     * @param string $applicationId
      * @dataProvider provideConfigValues
      */
-    public function testFactoryReturnsClient($applicationId)
+    public function testFactoryReturnsClient(string $applicationId): void
     {
         $config = [
             'application_id' => $applicationId
@@ -44,21 +41,19 @@ class BlitlineClientTest extends TestCase
         $this->assertEquals($jobBuilder, $client->getJobBuilder());
     }
 
-    /**
-     * @expectedException \Detail\Blitline\Exception\RuntimeException
-     */
-    public function testFactoryThrowsExceptionOnMissingConfigurationOptions()
+    public function testFactoryThrowsExceptionOnMissingConfigurationOptions(): void
     {
+        $this->expectException(Exception\RuntimeException::CLASS);
+
         $config = [];
 
         BlitlineClient::factory($config);
     }
 
-    /**
-     * @expectedException \Detail\Blitline\Exception\RuntimeException
-     */
-    public function testFactoryThrowsExceptionOnBlankConfigurationOptions()
+    public function testFactoryThrowsExceptionOnBlankConfigurationOptions(): void
     {
+        $this->expectException(Exception\RuntimeException::CLASS);
+
         $config = [
             'application_id' => '',
         ];
@@ -67,10 +62,10 @@ class BlitlineClientTest extends TestCase
     }
 
     /**
-     * @param $applicationId
+     * @param string $applicationId
      * @dataProvider provideConfigValues
      */
-    public function testClientHasCommands($applicationId)
+    public function testClientHasCommands(string $applicationId): void
     {
         $config = [
             'application_id' => $applicationId,
@@ -94,7 +89,7 @@ class BlitlineClientTest extends TestCase
 //        );
     }
 
-    public function testJobBuilderCanBeSet()
+    public function testJobBuilderCanBeSet(): void
     {
         $config = [
             'application_id' => 'random_application_id',
@@ -106,44 +101,12 @@ class BlitlineClientTest extends TestCase
 
         $jobBuilder = new JobBuilder();
 
-        $this->assertEquals($client, $client->setJobBuilder($jobBuilder));
+        $client->setJobBuilder($jobBuilder);
+
         $this->assertEquals($jobBuilder, $client->getJobBuilder());
     }
 
-    public function testCommandExceptionsAreHandled()
-    {
-//        $commandResponse = array('a' => 'b');
-//
-        $command = $this->getMockBuilder(Command::CLASS)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $exception = $this->getMockBuilder(CommandException::CLASS)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        /** @var CommandException $exception */
-
-        $client = $this->getMockBuilder(BlitlineClient::CLASS)
-            ->disableOriginalConstructor()
-            ->setMethods(['getCommand', 'execute'])
-            ->getMock();
-        $client
-            ->expects($this->any())
-            ->method('getCommand')
-            ->will($this->returnValue($command));
-        $client
-            ->expects($this->any())
-            ->method('execute')
-            ->will($this->throwException($exception));
-
-        /** @var BlitlineClient $client */
-
-        $this->setExpectedException(Exception\RuntimeException::CLASS);
-        $client->__call('dummyCommand', []);
-    }
-
-    public function testCommandsAcceptDefinitions()
+    public function testCommandsAcceptDefinitions(): void
     {
         $commandResponse = ['a' => 'b'];
 
@@ -168,7 +131,7 @@ class BlitlineClientTest extends TestCase
 
         $commandArgs = ['c' => 'd'];
 
-        $definition = $this->getMock(JobDefinition::CLASS);
+        $definition = $this->getMockBuilder(JobDefinition::CLASS)->getMock();
         $definition
             ->expects($this->any())
             ->method('toArray')

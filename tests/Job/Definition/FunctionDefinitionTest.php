@@ -6,15 +6,12 @@ use Detail\Blitline\Job\Definition\FunctionDefinition;
 
 class FunctionDefinitionTest extends DefinitionTestCase
 {
-    /**
-     * @return mixed
-     */
-    protected function getDefinitionClass()
+    protected function getDefinitionClass(): string
     {
         return FunctionDefinition::CLASS;
     }
 
-    public function testNameCanBeSet()
+    public function testNameCanBeSet(): void
     {
         $definition = $this->getDefinition();
         $name = 'resize';
@@ -27,7 +24,7 @@ class FunctionDefinitionTest extends DefinitionTestCase
         $this->assertEquals($name, $definition->getName());
     }
 
-    public function testParamsCanBeSet()
+    public function testParamsCanBeSet(): void
     {
         $definition = $this->getDefinition();
         $params = ['a' => 'b'];
@@ -40,7 +37,7 @@ class FunctionDefinitionTest extends DefinitionTestCase
         $this->assertEquals($params, $definition->getParams());
     }
 
-    public function testSaveOptionsCanBeSet()
+    public function testSaveOptionsCanBeSet(): void
     {
         $definition = $this->getDefinition();
         $saveOptions = ['a' => 'b'];

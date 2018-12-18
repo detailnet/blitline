@@ -48,19 +48,19 @@ abstract class BaseResponse implements
             return is_array($data) ? $data : [];
         } catch (\Exception $e) {
             throw new Exception\RuntimeException(
-                sprintf('Failed extract data from HTTP response: %s', $e->getMessage()),
+                sprintf('Failed to extract data from HTTP response: %s', $e->getMessage()),
                 $e->getCode(),
                 $e
             );
         }
     }
 
-    private function decodeJson(string $value): array
+    private function decodeJson(?string $value): array
     {
         $data = json_decode($value, true);
 
         if (!$data) {
-            $message = 'Unknown jsonError';
+            $message = 'Unknown error';
             $jsonError = json_last_error();
 
             if ($jsonError !== JSON_ERROR_NONE) {

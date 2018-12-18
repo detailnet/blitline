@@ -7,15 +7,12 @@ use Detail\Blitline\Job\Definition\JobDefinition;
 
 class JobDefinitionTest extends DefinitionTestCase
 {
-    /**
-     * @return string
-     */
-    protected function getDefinitionClass()
+    protected function getDefinitionClass(): string
     {
         return JobDefinition::CLASS;
     }
 
-    public function testSourceCanBeSet()
+    public function testSourceCanBeSet(): void
     {
         $definition = $this->getDefinition();
         $url = 'http://www.detailnet.ch/image.jpg';
@@ -28,7 +25,7 @@ class JobDefinitionTest extends DefinitionTestCase
         $this->assertEquals($url, $definition->getSource());
     }
 
-    public function testSourceTypeCanBeSet()
+    public function testSourceTypeCanBeSet(): void
     {
         $definition = $this->getDefinition();
         $type = 'http://www.detailnet.ch/image.jpg';
@@ -41,7 +38,7 @@ class JobDefinitionTest extends DefinitionTestCase
         $this->assertEquals($type, $definition->getSourceType());
     }
 
-    public function testSourceDataCanBeSet()
+    public function testSourceDataCanBeSet(): void
     {
         $definition = $this->getDefinition();
         $data = [
@@ -57,7 +54,7 @@ class JobDefinitionTest extends DefinitionTestCase
         $this->assertEquals($data, $definition->getSourceData());
     }
 
-    public function testPostbackUrlCanBeSet()
+    public function testPostbackUrlCanBeSet(): void
     {
         $definition = $this->getDefinition();
         $url = 'http://www.detailnet.ch/job';
@@ -70,7 +67,7 @@ class JobDefinitionTest extends DefinitionTestCase
         $this->assertEquals($url, $definition->getPostbackUrl());
     }
 
-    public function testVersionCanBeSet()
+    public function testVersionCanBeSet(): void
     {
         $definition = $this->getDefinition();
         $version = '1.2.3';
@@ -83,7 +80,7 @@ class JobDefinitionTest extends DefinitionTestCase
         $this->assertEquals($version, $definition->getVersion());
     }
 
-    public function testFunctionsCanBeSet()
+    public function testFunctionsCanBeSet(): void
     {
         $definition = $this->getDefinition();
         $functionOne = new FunctionDefinition();

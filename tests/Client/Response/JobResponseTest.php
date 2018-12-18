@@ -1,15 +1,12 @@
 <?php
 
-namespace DetailTest\Blitline\Response;
+namespace DetailTest\Blitline\Client\Response;
 
-use Detail\Blitline\Response\JobResponse;
+use Detail\Blitline\Client\Response\JobResponse;
 
 class JobResponseTest extends ResponseTestCase
 {
-    /**
-     * @return array
-     */
-    public function provideErrors()
+    public function provideErrors(): array
     {
         return [
             [
@@ -31,7 +28,7 @@ class JobResponseTest extends ResponseTestCase
         ];
     }
 
-    public function testJobIdCanBeGet()
+    public function testJobIdCanBeGet(): void
     {
         $jobId = 'some-job-id';
         $result = ['job_id' => $jobId];
@@ -46,7 +43,7 @@ class JobResponseTest extends ResponseTestCase
      * @param array $errors
      * @dataProvider provideErrors
      */
-    public function testErrorsAreHandled(array $result, array $errors)
+    public function testErrorsAreHandled(array $result, array $errors): void
     {
         $response = $this->getJobResponse($result);
 
@@ -54,12 +51,11 @@ class JobResponseTest extends ResponseTestCase
         $this->assertEquals($errors, $response->getErrors());
     }
 
-    /**
-     * @param array $data
-     * @return JobResponse
-     */
-    protected function getJobResponse(array $data)
+    protected function getJobResponse(array $data): JobResponse
     {
-        return $this->getResponse(JobResponse::CLASS, $data);
+        /** @var JobResponse $response */
+        $response = $this->getResponse(JobResponse::CLASS, $data);
+
+        return $response;
     }
 }
