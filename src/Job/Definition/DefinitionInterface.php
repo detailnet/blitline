@@ -4,14 +4,7 @@ namespace Detail\Blitline\Job\Definition;
 
 interface DefinitionInterface
 {
-    /**
-     * @param array $options
-     * @return DefinitionInterface
-     */
-    public function applyOptions(array $options);
+    public function applyOptions(array $options): DefinitionInterface;
 
-    /**
-     * @return array
-     */
-    public function toArray();
+    public function toArray(): array;
 }

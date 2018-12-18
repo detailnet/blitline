@@ -27,55 +27,34 @@ class JobBuilder implements
      */
     protected $defaultOptions = [];
 
-    /**
-     * @return string
-     */
-    public function getJobClass()
+    public function getJobClass(): string
     {
         return $this->jobClass;
     }
 
-    /**
-     * @param string $jobClass
-     * @return JobBuilder
-     */
-    public function setJobClass($jobClass)
+    public function setJobClass(string $jobClass): JobBuilder
     {
         $this->jobClass = $jobClass;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getSourceClass()
+    public function getSourceClass(): string
     {
         return $this->sourceClass;
     }
 
-    /**
-     * @param string $sourceClass
-     * @return JobBuilder
-     */
-    public function setSourceClass($sourceClass)
+    public function setSourceClass(string $sourceClass): JobBuilder
     {
         $this->sourceClass = $sourceClass;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getFunctionClass()
+    public function getFunctionClass(): string
     {
         return $this->functionClass;
     }
 
-    /**
-     * @param string $functionClass
-     * @return JobBuilder
-     */
-    public function setFunctionClass($functionClass)
+    public function setFunctionClass(string $functionClass): JobBuilder
     {
         $this->functionClass = $functionClass;
         return $this;
@@ -86,7 +65,7 @@ class JobBuilder implements
      * @param mixed $default
      * @return mixed
      */
-    public function getDefaultOption($name, $default = null)
+    public function getDefaultOption(string $name, $default = null)
     {
         return array_key_exists($name, $this->defaultOptions) ? $this->defaultOptions[$name] : $default;
     }
@@ -96,17 +75,13 @@ class JobBuilder implements
      * @param mixed $value
      * @return JobBuilder
      */
-    public function setDefaultOption($name, $value)
+    public function setDefaultOption(string $name, $value): JobBuilder
     {
         $this->defaultOptions[$name] = $value;
         return $this;
     }
 
-    /**
-     * @param Definition\DefinitionInterface $definition
-     * @return array
-     */
-    public function getDefaultOptions(Definition\DefinitionInterface $definition = null)
+    public function getDefaultOptions(Definition\DefinitionInterface $definition = null): array
     {
         $options = $this->defaultOptions;
 
@@ -145,20 +120,13 @@ class JobBuilder implements
         return $matchingOptionsWithoutPrefix;
     }
 
-    /**
-     * @param array $options
-     * @return JobBuilder
-     */
-    public function setDefaultOptions(array $options)
+    public function setDefaultOptions(array $options): JobBuilder
     {
         $this->defaultOptions = $options;
         return $this;
     }
 
-    /**
-     * @return Definition\JobDefinitionInterface
-     */
-    public function createJob()
+    public function createJob(): Definition\JobDefinitionInterface
     {
         /** @var Definition\JobDefinitionInterface $definition */
         $definition = $this->createDefinition(
@@ -169,10 +137,7 @@ class JobBuilder implements
         return $definition;
     }
 
-    /**
-     * @return Definition\SourceDefinitionInterface
-     */
-    public function createSource()
+    public function createSource(): Definition\SourceDefinitionInterface
     {
         /** @var Definition\SourceDefinitionInterface $definition */
         $definition = $this->createDefinition(
@@ -183,10 +148,7 @@ class JobBuilder implements
         return $definition;
     }
 
-    /**
-     * @return Definition\FunctionDefinitionInterface
-     */
-    public function createFunction()
+    public function createFunction(): Definition\FunctionDefinitionInterface
     {
         /** @var Definition\FunctionDefinitionInterface $definition */
         $definition = $this->createDefinition(
@@ -197,12 +159,7 @@ class JobBuilder implements
         return $definition;
     }
 
-    /**
-     * @param string $class
-     * @param string $interface
-     * @return Definition\DefinitionInterface
-     */
-    protected function createDefinition($class, $interface)
+    private function createDefinition(string $class, string $interface): Definition\DefinitionInterface
     {
         if (!class_exists($class)) {
             throw new RuntimeException(sprintf('Class "%s" does not exist', $class));

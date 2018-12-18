@@ -4,36 +4,15 @@ namespace Detail\Blitline\Job\Definition;
 
 interface SourceDefinitionInterface extends DefinitionInterface
 {
-    /**
-     * @return string
-     */
-    public function getName();
+    public function getName(): ?string;
 
-    /**
-     * @param string $name
-     * @return SourceDefinitionInterface
-     */
-    public function setName($name);
+    public function setName(string $name): SourceDefinitionInterface;
 
-    /**
-     * @return string
-     */
-    public function getBucket();
+    public function getBucket(): ?string;
 
-    /**
-     * @param string $bucket
-     * @return SourceDefinitionInterface
-     */
-    public function setBucket($bucket);
+    public function setBucket(string $bucket): SourceDefinitionInterface;
 
-    /**
-     * @return string
-     */
-    public function getKey();
+    public function getKey(): ?string;
 
-    /**
-     * @param string $key
-     * @return SourceDefinitionInterface
-     */
-    public function setKey($key);
+    public function setKey(string $key): SourceDefinitionInterface;
 }

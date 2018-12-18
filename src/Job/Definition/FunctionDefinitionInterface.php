@@ -4,36 +4,15 @@ namespace Detail\Blitline\Job\Definition;
 
 interface FunctionDefinitionInterface extends DefinitionInterface
 {
-    /**
-     * @param string $name
-     * @return FunctionDefinitionInterface
-     */
-    public function setName($name);
+    public function setName(string $name): FunctionDefinitionInterface;
 
-    /**
-     * @return string
-     */
-    public function getName();
+    public function getName(): ?string;
 
-    /**
-     * @param array $params
-     * @return FunctionDefinitionInterface
-     */
-    public function setParams(array $params);
+    public function setParams(array $params): FunctionDefinitionInterface;
 
-    /**
-     * @return array
-     */
-    public function getParams();
+    public function getParams(): ?array;
 
-    /**
-     * @param array $saveOptions
-     * @return FunctionDefinitionInterface
-     */
-    public function setSaveOptions(array $saveOptions);
+    public function setSaveOptions(array $saveOptions): FunctionDefinitionInterface;
 
-    /**
-     * @return array
-     */
-    public function getSaveOptions();
+    public function getSaveOptions(): ?array;
 }

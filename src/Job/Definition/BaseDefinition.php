@@ -6,35 +6,26 @@ use ArrayObject;
 use RecursiveIteratorIterator;
 use RecursiveArrayIterator;
 
-abstract class BaseDefinition
+abstract class BaseDefinition implements
+    DefinitionInterface
 {
     /**
      * @var array
      */
     protected $options = [];
 
-    /**
-     * @return array
-     */
-    public function getOptions()
+    public function getOptions(): array
     {
         return $this->options;
     }
 
-    /**
-     * @param array $options
-     * @return BaseDefinition
-     */
-    public function setOptions($options)
+    public function setOptions(array $options): BaseDefinition
     {
         $this->options = $options;
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function applyOptions(array $options)
+    public function applyOptions(array $options): DefinitionInterface
     {
         $this->options = array_replace_recursive($this->options, $options);
         return $this;
@@ -45,7 +36,7 @@ abstract class BaseDefinition
      * @param mixed $value
      * @return BaseDefinition
      */
-    public function setOption($name, $value)
+    public function setOption(string $name, $value): BaseDefinition
     {
         // Merge if both existing and new option value are arrays...
         if (is_array($value) && isset($this->options[$name]) && is_array($this->options[$name])) {
@@ -61,15 +52,12 @@ abstract class BaseDefinition
      * @param mixed $default
      * @return mixed
      */
-    public function getOption($name, $default = null)
+    public function getOption(string $name, $default = null)
     {
         return array_key_exists($name, $this->options) ? $this->options[$name] : $default;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function toArray()
+    public function toArray(): array
     {
         $data = new ArrayObject($this->options);
 

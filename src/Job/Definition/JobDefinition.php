@@ -2,15 +2,16 @@
 
 namespace Detail\Blitline\Job\Definition;
 
-class JobDefinition extends BaseDefinition implements JobDefinitionInterface
+class JobDefinition extends BaseDefinition implements
+    JobDefinitionInterface
 {
     const OPTION_SOURCE       = 'src';
+    const OPTION_SOURCE_TYPE  = 'src_type';
+    const OPTION_SOURCE_DATA  = 'src_data';
     const OPTION_POSTBACK_URL = 'postback_url';
     const OPTION_VERSION      = 'v';
     const OPTION_PRE_PROCESS  = 'pre_process';
     const OPTION_FUNCTIONS    = 'functions';
-    const OPTION_SOURCE_TYPE  = 'src_type';
-    const OPTION_SOURCE_DATA  = 'src_data';
 
     /**
      * @var array
@@ -21,9 +22,10 @@ class JobDefinition extends BaseDefinition implements JobDefinitionInterface
     ];
 
     /**
-     * @inheritdoc
+     * @param string|SourceDefinitionInterface $src
+     * @return JobDefinitionInterface
      */
-    public function setSource($src)
+    public function setSource($src): JobDefinitionInterface
     {
         $this->setOption(self::OPTION_SOURCE, $src);
 
@@ -39,106 +41,78 @@ class JobDefinition extends BaseDefinition implements JobDefinitionInterface
     }
 
     /**
-     * @inheritdoc
+     * @return string|SourceDefinitionInterface
      */
     public function getSource()
     {
         return $this->getOption(self::OPTION_SOURCE);
     }
 
-    /**
-     * @param string $sourceType
-     * @return JobDefinitionInterface
-     */
-    public function setSourceType($sourceType)
+    public function setSourceType(string $sourceType): JobDefinition
     {
+        /** @todo Why is this method not in JobDefinitionInterface? */
         $this->setOption(self::OPTION_SOURCE_TYPE, $sourceType);
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getSourceType()
+    public function getSourceType(): ?string
     {
+        /** @todo Why is this method not in JobDefinitionInterface? */
         return $this->getOption(self::OPTION_SOURCE_TYPE);
     }
 
-    /**
-     * @param array $sourceData
-     * @return JobDefinitionInterface
-     */
-    public function setSourceData($sourceData)
+    public function setSourceData(array $sourceData): JobDefinition
     {
+        /** @todo Why is this method not in JobDefinitionInterface? */
         $this->setOption(self::OPTION_SOURCE_DATA, $sourceData);
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getSourceData()
+    public function getSourceData(): ?array
     {
+        /** @todo Why is this method not in JobDefinitionInterface? */
         return $this->getOption(self::OPTION_SOURCE_DATA);
     }
 
-    /**
-     * @param string $url
-     * @return JobDefinitionInterface
-     */
-    public function setPostbackUrl($url)
+    public function setPostbackUrl(string $url): JobDefinitionInterface
     {
         $this->setOption(self::OPTION_POSTBACK_URL, $url);
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getPostbackUrl()
+    public function getPostbackUrl(): ?string
     {
         return $this->getOption(self::OPTION_POSTBACK_URL);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function setVersion($version)
+    public function setVersion(string $version): JobDefinitionInterface
     {
         $this->setOption(self::OPTION_VERSION, $version);
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getVersion()
+    public function getVersion(): ?string
     {
         return $this->getOption(self::OPTION_VERSION);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function setPreProcess(array $preProcess)
+    public function setPreProcess(array $preProcess): JobDefinitionInterface
     {
         /** @todo Check that array contains valid preProcess */
         $this->setOption(self::OPTION_PRE_PROCESS, $preProcess);
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getPreProcess()
+    public function getPreProcess(): ?array
     {
         return $this->getOption(self::OPTION_PRE_PROCESS);
     }
 
     /**
-     * @inheritdoc
+     * @param array|FunctionDefinitionInterface[] $functions
+     * @return JobDefinitionInterface
      */
-    public function setFunctions(array $functions)
+    public function setFunctions(array $functions): JobDefinitionInterface
     {
         /** @todo Check that array contains valid functions */
         $this->setOption(self::OPTION_FUNCTIONS, $functions);
@@ -146,17 +120,18 @@ class JobDefinition extends BaseDefinition implements JobDefinitionInterface
     }
 
     /**
-     * @inheritdoc
+     * @return array|FunctionDefinitionInterface[]
      */
-    public function getFunctions()
+    public function getFunctions(): ?array
     {
         return $this->getOption(self::OPTION_FUNCTIONS);
     }
 
     /**
-     * @inheritdoc
+     * @param array|FunctionDefinitionInterface $function
+     * @return JobDefinitionInterface
      */
-    public function addFunction($function)
+    public function addFunction($function): JobDefinitionInterface
     {
         /** @todo Check that is array or Function object */
         $this->setFunctions([$function]); // Will get merged with existing functions

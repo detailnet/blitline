@@ -8,60 +8,39 @@ interface JobDefinitionInterface extends DefinitionInterface
      * @param string|SourceDefinitionInterface $src
      * @return JobDefinitionInterface
      */
-    public function setSource($src);
+    public function setSource($src): JobDefinitionInterface;
 
     /**
      * @return string|SourceDefinitionInterface
      */
     public function getSource();
 
-    /**
-     * @param string $url
-     * @return JobDefinitionInterface
-     */
-    public function setPostbackUrl($url);
+    public function setPostbackUrl(string $url): JobDefinitionInterface;
 
-    /**
-     * @return string
-     */
-    public function getPostbackUrl();
+    public function getPostbackUrl(): ?string;
 
-    /**
-     * @param string $version
-     * @return JobDefinitionInterface
-     */
-    public function setVersion($version);
+    public function setVersion(string $version): JobDefinitionInterface;
 
-    /**
-     * @return string
-     */
-    public function getVersion();
+    public function getVersion(): ?string;
 
-    /**
-     * @param array $preProcess
-     * @return JobDefinitionInterface
-     */
-    public function setPreProcess(array $preProcess);
+    public function setPreProcess(array $preProcess): JobDefinitionInterface;
 
-    /**
-     * @return array
-     */
-    public function getPreProcess();
+    public function getPreProcess(): ?array;
 
     /**
      * @param array|FunctionDefinitionInterface[] $functions
      * @return JobDefinitionInterface
      */
-    public function setFunctions(array $functions);
+    public function setFunctions(array $functions): JobDefinitionInterface;
 
     /**
      * @return array|FunctionDefinitionInterface[]
      */
-    public function getFunctions();
+    public function getFunctions(): ?array;
 
     /**
      * @param array|FunctionDefinitionInterface $function
      * @return JobDefinitionInterface
      */
-    public function addFunction($function);
+    public function addFunction($function): JobDefinitionInterface;
 }

@@ -4,18 +4,9 @@ namespace Detail\Blitline\Job;
 
 interface JobBuilderInterface
 {
-    /**
-     * @return Definition\JobDefinitionInterface
-     */
-    public function createJob();
+    public function createJob(): Definition\JobDefinitionInterface;
 
-    /**
-     * @return Definition\SourceDefinitionInterface
-     */
-    public function createSource();
+    public function createSource(): Definition\SourceDefinitionInterface;
 
-    /**
-     * @return Definition\FunctionDefinitionInterface
-     */
-    public function createFunction();
+    public function createFunction(): Definition\FunctionDefinitionInterface;
 }

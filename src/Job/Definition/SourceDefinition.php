@@ -16,53 +16,35 @@ class SourceDefinition extends BaseDefinition implements
         self::OPTION_NAME => 's3',
     ];
 
-    /**
-     * @inheritdoc
-     */
-    public function setName($name)
+    public function setName(string $name): SourceDefinitionInterface
     {
         $this->setOption(self::OPTION_NAME, $name);
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->getOption(self::OPTION_NAME);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function setBucket($bucket)
+    public function setBucket(string $bucket): SourceDefinitionInterface
     {
         $this->setOption(self::OPTION_BUCKET, $bucket);
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getBucket()
+    public function getBucket(): ?string
     {
         return $this->getOption(self::OPTION_BUCKET);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function setKey($key)
+    public function setKey(string $key): SourceDefinitionInterface
     {
         $this->setOption(self::OPTION_KEY, $key);
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getKey()
+    public function getKey(): ?string
     {
         return $this->getOption(self::OPTION_KEY);
     }
