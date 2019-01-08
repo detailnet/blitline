@@ -16,6 +16,17 @@ class ResourceResponse extends BaseResponse
     protected $resource;
 
     /**
+     * @param array $data
+     * @return ResourceResponse
+     */
+    public static function fromData(array $data)
+    {
+        $response = new PsrResponse(200, [], json_encode($data));
+
+        return new static($response);
+    }
+    
+    /**
      * @param Operation $operation
      * @param PsrResponse $response
      * @return ResourceResponse
