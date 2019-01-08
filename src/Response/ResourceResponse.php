@@ -25,7 +25,7 @@ class ResourceResponse extends BaseResponse
 
         return new static($response);
     }
-    
+
     /**
      * @param Operation $operation
      * @param PsrResponse $response
