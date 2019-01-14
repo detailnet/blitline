@@ -10,7 +10,7 @@ if (!$imageKey) {
     throw new RuntimeException('Missing or invalid parameter "image_key"');
 }
 
-$getConfig = function($optionName) use ($config) {
+$getConfig = function ($optionName) use ($config) {
     if (!isset($config[$optionName])) {
         throw new RuntimeException(sprintf('Missing configuration option "%s"', $optionName));
     }
@@ -28,11 +28,11 @@ $blitline = BlitlineClient::factory($config);
 $jobBuilder = $blitline->getJobBuilder();
 $jobBuilder->setDefaultOption(
     'function.save',
-    array(
-        's3_destination' => array(
+    [
+        's3_destination' => [
             'bucket' => $getConfig('s3bucket'),
-        ),
-    )
+        ],
+    ]
 );
 
 $job = $jobBuilder->createJob()
@@ -44,20 +44,20 @@ $job = $jobBuilder->createJob()
         $jobBuilder->createFunction()
             ->setName('resize_to_fit')
             ->setParams(
-                array(
+                [
                     'width' => $imageSize,
                     'height' => $imageSize,
                     'only_shrink_larger' => true, // Don't upscale image
-                )
+                ]
             )
             ->setSaveOptions(
-                array(
+                [
                     'image_identifier' => $imageName,
-                    's3_destination' => array(
-//                        'bucket' => $getConfig('s3bucket'),
+                    's3_destination' => [
+                        // 'bucket' => $getConfig('s3bucket'),
                         'key' => $getConfig('s3prefix') . '/' . $imageName . '-' . $imageSize . '_blitline.jpg',
-                    ),
-                )
+                    ],
+                ]
             )
     );
 
@@ -67,4 +67,13 @@ if (isset($config['version'])) {
 
 $response = $blitline->submitJob($job);
 
-var_dump($response->getResult());
+if ($response->hasErrors()) {
+    var_dump($response->getErrors());
+} else {
+    var_dump(
+        [
+            'job_id' => $response->getJobId(),
+            'images' => $response->getImages(),
+        ]
+    );
+}
